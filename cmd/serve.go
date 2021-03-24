@@ -85,7 +85,6 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 
 	regStrP(serveCmd, "bind", "b", ":1332", "Bind-Address")
-	cobra.CheckErr(serveCmd.MarkPersistentFlagRequired("bind"))
 
 	// redis
 	regStrP(serveCmd, "redis-addr", "r", "", "Redis Address")
