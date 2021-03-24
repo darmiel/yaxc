@@ -30,7 +30,6 @@ var serveCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// load values
 		bind := viper.GetString("bind")
-		redisAddr := viper.GetString("redis-addr")
 		defTTL := viper.GetDuration("default-ttl")
 		minTTL := viper.GetDuration("min-ttl")
 		maxTTL := viper.GetDuration("max-ttl")
@@ -55,14 +54,24 @@ var serveCmd = &cobra.Command{
 			log.Println("WARN: Infinite body length")
 		}
 
+		// redis
+		redisAddr := viper.GetString("redis-addr")
+		redisPass := viper.GetString("redis-pass")
+		redisDB := viper.GetInt("redis-db")
+		redisPrefix := viper.GetString("redis-prefix")
 		if redisAddr == "" {
 			log.Println("WARN: Not using redis")
 		}
 
 		// create server & start
 		s := server.NewServer(&server.YAxCConfig{
-			BindAddress:   bind,
+			BindAddress: bind,
+			// Redis
 			RedisAddress:  redisAddr,
+			RedisPassword: redisPass,
+			RedisDatabase: redisDB,
+			RedisPrefix:   redisPrefix,
+			// TTL
 			DefaultTTL:    defTTL,
 			MinTTL:        minTTL,
 			MaxTTL:        maxTTL,
@@ -78,7 +87,11 @@ func init() {
 	regStrP(serveCmd, "bind", "b", ":1332", "Bind-Address")
 	cobra.CheckErr(serveCmd.MarkPersistentFlagRequired("bind"))
 
-	regStrP(serveCmd, "redis-addr", "r", "localhost:6379", "Redis-Address")
+	// redis
+	regStrP(serveCmd, "redis-addr", "r", "", "Redis Address")
+	regStr(serveCmd, "redis-pass", "", "Redis Password")
+	regInt(serveCmd, "redis-db", 0, "Redis Database")
+	regStr(serveCmd, "redis-prefix", "yaxc::", "Redis Prefix")
 
 	// ttl
 	regDurP(serveCmd, "default-ttl", "t", 60*time.Second, "Default TTL")
@@ -93,11 +106,19 @@ func regStrP(cmd *cobra.Command, name, shorthand, def, usage string) {
 	cmd.PersistentFlags().StringP(name, shorthand, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }
+func regStr(cmd *cobra.Command, name, def, usage string) {
+	cmd.PersistentFlags().String(name, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
 func regDurP(cmd *cobra.Command, name, shorthand string, def time.Duration, usage string) {
 	cmd.PersistentFlags().DurationP(name, shorthand, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }
 func regIntP(cmd *cobra.Command, name, shorthand string, def int, usage string) {
 	cmd.PersistentFlags().IntP(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regInt(cmd *cobra.Command, name string, def int, usage string) {
+	cmd.PersistentFlags().Int(name, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }
