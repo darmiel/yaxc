@@ -15,7 +15,9 @@ limitations under the License.
 */
 package main
 
-import "github.com/darmiel/yaxc/cmd"
+import (
+	"github.com/darmiel/yaxc/cmd"
+)
 
 func main() {
 	cmd.Execute()
