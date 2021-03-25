@@ -65,6 +65,7 @@ var serveCmd = &cobra.Command{
 
 		// other
 		enableEnc := viper.GetBool("enable-encryption")
+		proxyHeader := viper.GetString("proxy-header")
 
 		// create server & start
 		s := server.NewServer(&server.YAxCConfig{
@@ -81,6 +82,7 @@ var serveCmd = &cobra.Command{
 			MaxBodyLength: maxBodyLen,
 			// Other
 			EnableEncryption: enableEnc,
+			ProxyHeader:      proxyHeader,
 		})
 		s.Start()
 	},
@@ -105,6 +107,7 @@ func init() {
 	// other
 	regIntP(serveCmd, "max-body-length", "x", 1024, "Max Body Length")
 	regBoolP(serveCmd, "enable-encryption", "e", true, "Enable Encryption")
+	regStr(serveCmd, "proxy-header", "", "Proxy Header")
 }
 
 func regStrP(cmd *cobra.Command, name, shorthand, def, usage string) {

@@ -1,10 +1,38 @@
 package server
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"strings"
+	"time"
+)
 
 func (s *yAxCServer) Start() {
 	log.Info("Starting YAxC server on", s.BindAddress)
-	s.App = fiber.New()
+
+	cfg := &fiber.Config{}
+	if s.ProxyHeader != "" {
+		if s.ProxyHeader == "$proxy" {
+			s.ProxyHeader = "X-Forwarded-For"
+		}
+		cfg.ProxyHeader = s.ProxyHeader
+	}
+	s.App = fiber.New(*cfg)
+
+	// limiter middleware
+	s.App.Use(limiter.New(limiter.Config{
+		Next: func(c *fiber.Ctx) bool {
+			if c.IP() == "127.0.0.1" {
+				return true
+			}
+			if strings.HasPrefix(c.Path(), "/hash/") {
+				return true
+			}
+			return false
+		},
+		Max:        30,
+		Expiration: 60 * time.Second,
+	}))
 
 	// register routes
 	s.App.Get("/", func(ctx *fiber.Ctx) error {

@@ -39,6 +39,7 @@ type YAxCConfig struct {
 	// Other
 	MaxBodyLength    int
 	EnableEncryption bool
+	ProxyHeader      string
 }
 
 type yAxCServer struct {
