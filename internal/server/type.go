@@ -37,7 +37,8 @@ type YAxCConfig struct {
 	MinTTL     time.Duration // == MaxTTL -> cannot specify TTL
 	MaxTTL     time.Duration // == MinTTL -> cannot specify TTL
 	// Other
-	MaxBodyLength int
+	MaxBodyLength    int
+	EnableEncryption bool
 }
 
 type yAxCServer struct {
@@ -85,6 +86,8 @@ func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
 		os.Exit(1)
 		return
 	}
+
+	log.Info("Encryption:", s.EnableEncryption)
 
 	return
 }

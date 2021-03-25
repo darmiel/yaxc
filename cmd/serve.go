@@ -63,6 +63,9 @@ var serveCmd = &cobra.Command{
 			log.Println("WARN: Not using redis")
 		}
 
+		// other
+		enableEnc := viper.GetBool("enable-encryption")
+
 		// create server & start
 		s := server.NewServer(&server.YAxCConfig{
 			BindAddress: bind,
@@ -76,6 +79,8 @@ var serveCmd = &cobra.Command{
 			MinTTL:        minTTL,
 			MaxTTL:        maxTTL,
 			MaxBodyLength: maxBodyLen,
+			// Other
+			EnableEncryption: enableEnc,
 		})
 		s.Start()
 	},
@@ -99,6 +104,7 @@ func init() {
 
 	// other
 	regIntP(serveCmd, "max-body-length", "x", 1024, "Max Body Length")
+	regBoolP(serveCmd, "enable-encryption", "e", true, "Enable Encryption")
 }
 
 func regStrP(cmd *cobra.Command, name, shorthand, def, usage string) {
@@ -119,5 +125,9 @@ func regIntP(cmd *cobra.Command, name, shorthand string, def int, usage string) 
 }
 func regInt(cmd *cobra.Command, name string, def int, usage string) {
 	cmd.PersistentFlags().Int(name, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regBoolP(cmd *cobra.Command, name, shorthand string, def bool, usage string) {
+	cmd.PersistentFlags().BoolP(name, shorthand, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }

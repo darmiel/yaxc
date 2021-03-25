@@ -1,10 +1,13 @@
 package server
 
 import (
+	"errors"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
 	"time"
 )
+
+var errEncryptionNotEnabled = errors.New("encryption not enabled")
 
 func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 	path := ctx.Params("anywhere")
@@ -26,6 +29,9 @@ func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 
 	// Encryption
 	if q := ctx.Query("secret"); q != "" {
+		if !s.EnableEncryption {
+			return errEncryptionNotEnabled
+		}
 		// fail on error
 		encrypt, err := common.Encrypt(content, q)
 		if err != nil {
@@ -58,6 +64,9 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 
 	// Encryption
 	if q := ctx.Query("secret"); q != "" {
+		if !s.EnableEncryption {
+			return errEncryptionNotEnabled
+		}
 		// do not fail on error
 		if encrypt, err := common.Decrypt(res, q); err == nil {
 			res = string(encrypt)
