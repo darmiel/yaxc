@@ -39,6 +39,7 @@ func (s *yAxCServer) Start() {
 		return ctx.SendString(body)
 	})
 
+	s.App.Get("/hash/:anywhere", s.handleGetHashAnywhere)
 	s.App.Get("/:anywhere", s.handleGetAnywhere)
 	s.App.Post("/:anywhere", s.handlePostAnywhere)
 

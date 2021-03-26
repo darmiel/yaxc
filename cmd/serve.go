@@ -58,7 +58,8 @@ var serveCmd = &cobra.Command{
 		redisAddr := viper.GetString("redis-addr")
 		redisPass := viper.GetString("redis-pass")
 		redisDB := viper.GetInt("redis-db")
-		redisPrefix := viper.GetString("redis-prefix")
+		redisPrefixVal := viper.GetString("redis-prefix-value")
+		redisPrefixHsh := viper.GetString("redis-prefix-hash")
 		if redisAddr == "" {
 			log.Println("WARN: Not using redis")
 		}
@@ -71,10 +72,11 @@ var serveCmd = &cobra.Command{
 		s := server.NewServer(&server.YAxCConfig{
 			BindAddress: bind,
 			// Redis
-			RedisAddress:  redisAddr,
-			RedisPassword: redisPass,
-			RedisDatabase: redisDB,
-			RedisPrefix:   redisPrefix,
+			RedisAddress:   redisAddr,
+			RedisPassword:  redisPass,
+			RedisDatabase:  redisDB,
+			RedisPrefixVal: redisPrefixVal,
+			RedisPrefixHsh: redisPrefixHsh,
 			// TTL
 			DefaultTTL:    defTTL,
 			MinTTL:        minTTL,
@@ -97,7 +99,8 @@ func init() {
 	regStrP(serveCmd, "redis-addr", "r", "", "Redis Address")
 	regStr(serveCmd, "redis-pass", "", "Redis Password")
 	regInt(serveCmd, "redis-db", 0, "Redis Database")
-	regStr(serveCmd, "redis-prefix", "yaxc::", "Redis Prefix")
+	regStr(serveCmd, "redis-prefix-value", "yaxc::val::", "Redis Prefix (Value)")
+	regStr(serveCmd, "redis-prefix-hash", "yaxc::hash::", "Redis Prefix (Hash)")
 
 	// ttl
 	regDurP(serveCmd, "default-ttl", "t", 60*time.Second, "Default TTL")

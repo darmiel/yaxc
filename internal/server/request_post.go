@@ -50,35 +50,13 @@ func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 		return ctx.Status(400).SendString("ERROR: " + err.Error())
 	}
 
-	log.Debug(ctx.IP(), "updated", path)
+	// Set hash
+	hash := common.Hash(content)
+	if err := s.Backend.SetHash(path, hash, 5*time.Minute); err != nil {
+		return ctx.Status(400).SendString("ERROR: " + err.Error())
+	}
+
+	log.Debug(ctx.IP(), "updated", path, "with hash", hash)
 
 	return ctx.Status(200).SendString(content)
-}
-
-func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
-	path := ctx.Params("anywhere")
-	var res string
-	if res, err = s.Backend.Get(path); err != nil {
-		return
-	}
-
-	// Encryption
-	if q := ctx.Query("secret"); q != "" {
-		if !s.EnableEncryption {
-			return errEncryptionNotEnabled
-		}
-		// do not fail on error
-		if encrypt, err := common.Decrypt(res, q); err == nil {
-			res = string(encrypt)
-		}
-	}
-
-	log.Debug(ctx.IP(), "requested", path)
-
-	if res == "" {
-		ctx.Status(404)
-	} else {
-		ctx.Status(200)
-	}
-	return ctx.SendString(res)
 }
