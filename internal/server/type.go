@@ -28,10 +28,11 @@ type YAxCConfig struct {
 	// Address
 	BindAddress string // required
 	// Redis
-	RedisAddress  string // "" -> only use cache
-	RedisPassword string
-	RedisDatabase int
-	RedisPrefix   string
+	RedisAddress   string // "" -> only use cache
+	RedisPassword  string
+	RedisDatabase  int
+	RedisPrefixVal string
+	RedisPrefixHsh string
 	// Timeout
 	DefaultTTL time.Duration // 0 -> infinite
 	MinTTL     time.Duration // == MaxTTL -> cannot specify TTL
@@ -59,8 +60,9 @@ func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
 	if s.RedisAddress == "" {
 		// use cache backend
 		s.Backend = &CacheBackend{
-			c:       cache.New(s.DefaultTTL, s.DefaultTTL+time.Minute),
-			errCast: errors.New("not a string"),
+			cacheVal: cache.New(s.DefaultTTL, s.DefaultTTL+time.Minute),
+			cacheHsh: cache.New(s.DefaultTTL, s.DefaultTTL+time.Minute),
+			errCast:  errors.New("not a string"),
 		}
 	} else {
 		rb := &RedisBackend{
@@ -70,7 +72,8 @@ func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
 				Password: s.RedisPassword,
 				DB:       s.RedisDatabase,
 			}),
-			prefix: s.RedisPrefix,
+			prefixVal: s.RedisPrefixVal,
+			prefixHsh: s.RedisPrefixHsh,
 		}
 		s.Backend = rb
 		// ping test
