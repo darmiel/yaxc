@@ -47,14 +47,14 @@ func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 		return ctx.Status(400).SendString("ERROR: TTL out of range")
 	}
 
-	hash := common.Hash(content)
+	hash := common.MD5Hash(content)
 
 	// Set contents
 	errVal := s.Backend.Set(path, content, ttl)
 	errHsh := s.Backend.SetHash(path, hash, ttl)
 
 	if errVal != nil || errHsh != nil {
-		log.Warning("ERROR saving Value / Hash:", errVal, errHsh)
+		log.Warning("ERROR saving Value / MD5Hash:", errVal, errHsh)
 		return ctx.Status(400).SendString(
 			fmt.Sprintf("ERROR (Val): %v\nERROR (Hsh): %v", errVal, errHsh))
 	}

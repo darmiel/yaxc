@@ -2,11 +2,11 @@ package common
 
 import (
 	"crypto/md5"
-	"fmt"
+	"encoding/hex"
 )
 
-func Hash(text string) string {
+func MD5Hash(text string) string {
 	data := []byte(text)
 	sum := md5.Sum(data)
-	return fmt.Sprintf("%x", sum)
+	return hex.EncodeToString(sum[:])
 }
