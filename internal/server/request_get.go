@@ -3,10 +3,11 @@ package server
 import (
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
+	"strings"
 )
 
 func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
-	path := ctx.Params("anywhere")
+	path := strings.TrimSpace(ctx.Params("anywhere"))
 	var res string
 	if res, err = s.Backend.Get(path); err != nil {
 		return
@@ -23,7 +24,7 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 		}
 	}
 
-	// log.Debug(ctx.IP(), "requested", path)
+	log.Warning(ctx.IP(), "requested VALUE", path)
 
 	if res == "" {
 		ctx.Status(404)
@@ -34,11 +35,14 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 }
 
 func (s *yAxCServer) handleGetHashAnywhere(ctx *fiber.Ctx) (err error) {
-	path := ctx.Params("anywhere")
+	path := strings.TrimSpace(ctx.Params("anywhere"))
 	var res string
 	if res, err = s.Backend.GetHash(path); err != nil {
 		return
 	}
+
+	log.Warning(ctx.IP(), "requested HASH", path)
+
 	if res == "" {
 		ctx.Status(404)
 	} else {

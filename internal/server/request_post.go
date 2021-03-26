@@ -2,15 +2,17 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
+	"strings"
 	"time"
 )
 
 var errEncryptionNotEnabled = errors.New("encryption not enabled")
 
 func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
-	path := ctx.Params("anywhere")
+	path := strings.TrimSpace(ctx.Params("anywhere"))
 
 	// Read content
 	bytes := ctx.Body()
@@ -45,15 +47,16 @@ func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 		return ctx.Status(400).SendString("ERROR: TTL out of range")
 	}
 
-	// Set contents
-	if err := s.Backend.Set(path, content, ttl); err != nil {
-		return ctx.Status(400).SendString("ERROR: " + err.Error())
-	}
-
-	// Set hash
 	hash := common.Hash(content)
-	if err := s.Backend.SetHash(path, hash, 5*time.Minute); err != nil {
-		return ctx.Status(400).SendString("ERROR: " + err.Error())
+
+	// Set contents
+	errVal := s.Backend.Set(path, content, ttl)
+	errHsh := s.Backend.SetHash(path, hash, ttl)
+
+	if errVal != nil || errHsh != nil {
+		log.Warning("ERROR saving Value / Hash:", errVal, errHsh)
+		return ctx.Status(400).SendString(
+			fmt.Sprintf("ERROR (Val): %v\nERROR (Hsh): %v", errVal, errHsh))
 	}
 
 	log.Debug(ctx.IP(), "updated", path, "with hash", hash)
