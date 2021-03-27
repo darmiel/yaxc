@@ -60,6 +60,4 @@ func init() {
 
 	pasteCmd.Flags().StringVarP(&pasteAnywherePath, "anywhere", "a", "", "Path (Anywhere)")
 	pasteCmd.Flags().StringVarP(&pastePassphrase, "passphrase", "s", "", "Encryption Key")
-
-	regStrP(pasteCmd, "passphrase", "s", "", "Secret")
 }

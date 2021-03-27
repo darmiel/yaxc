@@ -34,25 +34,6 @@ var (
 	watchPassphrase   string
 )
 
-// watchCmd represents the watch command
-var watchCmd = &cobra.Command{
-	Use:  "watch",
-	Long: `Watch Clipboard`,
-	Run: func(cmd *cobra.Command, args []string) {
-
-		// start watcher
-		// clipboard
-		go watchClipboard(watchAnywherePath, watchPassphrase)
-		go watchServer(watchAnywherePath, watchPassphrase)
-
-		log.Println("Started clipboard-watcher. Press CTRL-C to stop.")
-		sc := make(chan os.Signal, 1)
-		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
-		<-sc
-		log.Println("Stopped.")
-	},
-}
-
 var (
 	errors int
 
@@ -62,6 +43,32 @@ var (
 	mu    = sync.Mutex{}
 	errMu = sync.Mutex{}
 )
+
+// watchCmd represents the watch command
+var watchCmd = &cobra.Command{
+	Use:  "watch",
+	Long: `Watch Clipboard`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		d := make(chan int, 1)
+
+		// start watcher
+		// clipboard
+		go watchClipboard(watchAnywherePath, watchPassphrase, d)
+		go watchServer(watchAnywherePath, watchPassphrase, d)
+
+		log.Println("Started clipboard-watcher. Press CTRL-C to stop.")
+		sc := make(chan os.Signal, 1)
+		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
+		<-sc
+
+		// stop watchers
+		d <- 1
+		d <- 1
+
+		log.Println("Stopped.")
+	},
+}
 
 func handleErr(err error, m string) {
 	errMu.Lock()
@@ -76,94 +83,114 @@ func handleErr(err error, m string) {
 	log.Println("[err] ERROR reading clipboard:", err, errors, "/ 6")
 }
 
-func watchClipboard(path, pass string) {
+func watchClipboard(path, pass string, done chan int) {
 	a := api.API()
+	t := time.NewTicker(100 * time.Millisecond)
+
 	for {
-		time.Sleep(100 * time.Millisecond)
-		mu.Lock()
+		select {
+		case <-t.C:
+			mu.Lock()
 
-		data, err := clipboard.ReadAll()
-		if err != nil {
+			data, err := clipboard.ReadAll()
+			if err != nil {
+				mu.Unlock()
+				handleErr(err, "clipboard-read")
+				continue
+			}
+			errors = 0
+
+			if lastClipboardData == data {
+				mu.Unlock()
+				continue
+			}
+
+			// calculate new hash
+			lastClipboardData = data
+			lastClipboardHash = common.MD5Hash(data)
+
+			// check if server has current clipboard
+			serverHash, err := a.GetHash(path)
+			if err != nil {
+				mu.Unlock()
+				handleErr(err, "read-server-hash")
+				continue
+			}
+
+			if serverHash == lastClipboardHash {
+				mu.Unlock()
+				log.Println("[ ~ ] (rea) Server Hash == Local Hash")
+				continue
+			}
+
+			// update server hash
+			if err := a.SetContent(path, pass, data); err != nil {
+				mu.Unlock()
+				handleErr(err, "set-server-content")
+				continue
+			}
+
+			log.Println("[ ok] Updated contents.")
 			mu.Unlock()
-			handleErr(err, "clipboard-read")
-			continue
+			break
+
+		case <-done:
+			log.Println("[ ok] Stopping watch clipboard")
+			return
 		}
-		errors = 0
-
-		if lastClipboardData == data {
-			mu.Unlock()
-			continue
-		}
-
-		// calculate new hash
-		lastClipboardData = data
-		lastClipboardHash = common.MD5Hash(data)
-
-		// check if server has current clipboard
-		serverHash, err := a.GetHash(path)
-		if err != nil {
-			mu.Unlock()
-			handleErr(err, "read-server-hash")
-			continue
-		}
-
-		if serverHash == lastClipboardHash {
-			mu.Unlock()
-			log.Println("[ ~ ] (rea) Server Hash == Local Hash")
-			continue
-		}
-
-		// update server hash
-		if err := a.SetContent(path, pass, data); err != nil {
-			mu.Unlock()
-			handleErr(err, "set-server-content")
-			continue
-		}
-
-		log.Println("[ ok] Updated contents.")
-		mu.Unlock()
 	}
 }
 
-func watchServer(path, pass string) {
+func watchServer(path, pass string, done chan int) {
 	a := api.API()
+	t := time.NewTicker(1 * time.Second)
+
 	for {
-		time.Sleep(1 * time.Second)
-		mu.Lock()
+		select {
+		case <-t.C:
 
-		hash, err := a.GetHash(path)
-		if err != nil {
+			time.Sleep(1 * time.Second)
+			mu.Lock()
+
+			hash, err := a.GetHash(path)
+			if err != nil {
+				mu.Unlock()
+				handleErr(err, "read-server-hash")
+				continue
+			}
+
+			if hash == lastClipboardHash {
+				mu.Unlock()
+				continue
+			}
+
+			// get data
+			data, err := a.GetContent(path, pass)
+			if err != nil {
+				mu.Unlock()
+				handleErr(err, "read-server-contents")
+				continue
+			}
+
+			log.Println("[ ~ ] Received new data:", data)
+
+			lastClipboardData = data
+			lastClipboardHash = common.MD5Hash(data)
+
+			if err := clipboard.WriteAll(data); err != nil {
+				mu.Unlock()
+				handleErr(err, "write-clipboard")
+				continue
+			}
+
+			log.Println("[ ok] Wrote client content")
 			mu.Unlock()
-			handleErr(err, "read-server-hash")
-			continue
+			break
+
+		case <-done:
+			log.Println("[ ok] Stopping watch server")
+			return
 		}
-
-		if hash == lastClipboardHash {
-			mu.Unlock()
-			continue
-		}
-
-		// get data
-		data, err := a.GetContent(path, pass)
-		if err != nil {
-			mu.Unlock()
-			handleErr(err, "read-server-contents")
-			continue
-		}
-
-		log.Println("[ ~ ] Received new data:", data)
-
-		lastClipboardData = data
-		lastClipboardHash = common.MD5Hash(data)
-
-		if err := clipboard.WriteAll(data); err != nil {
-			mu.Unlock()
-			handleErr(err, "write-clipboard")
-			continue
-		}
-
-		log.Println("[ ok] Wrote client content")
-		mu.Unlock()
 	}
 }
 

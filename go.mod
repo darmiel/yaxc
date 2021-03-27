@@ -3,6 +3,7 @@ module github.com/darmiel/yaxc
 go 1.16
 
 require (
+	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/gofiber/fiber/v2 v2.6.0
 	github.com/imroc/req v0.3.0

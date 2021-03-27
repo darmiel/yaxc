@@ -33,3 +33,12 @@ func (a *api) SetContent(path, passphrase, content string) (err error) {
 	_, err = req.Post(a.ServerURL+"/"+path, content)
 	return
 }
+
+func (a *api) GetHash(path string) (res string, err error) {
+	var resp *req.Resp
+	if resp, err = req.Get(a.ServerURL + "/hash/" + path); err != nil {
+		return
+	}
+	res = resp.String()
+	return
+}
