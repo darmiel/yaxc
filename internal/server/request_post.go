@@ -14,6 +14,11 @@ var errEncryptionNotEnabled = errors.New("encryption not enabled")
 func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 	path := strings.TrimSpace(ctx.Params("anywhere"))
 
+	// validate path
+	if !common.ValidateAnywherePath(path) {
+		return ctx.Status(400).SendString("ERROR: Invalid path")
+	}
+
 	// Read content
 	bytes := ctx.Body()
 	if s.MaxBodyLength > 0 && len(bytes) > s.MaxBodyLength {
@@ -55,7 +60,7 @@ func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 
 	if errVal != nil || errHsh != nil {
 		log.Warning("ERROR saving Value / MD5Hash:", errVal, errHsh)
-		return ctx.Status(400).SendString(
+		return ctx.Status(500).SendString(
 			fmt.Sprintf("ERROR (Val): %v\nERROR (Hsh): %v", errVal, errHsh))
 	}
 

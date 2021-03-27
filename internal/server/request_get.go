@@ -8,6 +8,12 @@ import (
 
 func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 	path := strings.TrimSpace(ctx.Params("anywhere"))
+
+	// validate path
+	if !common.ValidateAnywherePath(path) {
+		return ctx.Status(400).SendString("ERROR: Invalid path")
+	}
+
 	var res string
 	if res, err = s.Backend.Get(path); err != nil {
 		return

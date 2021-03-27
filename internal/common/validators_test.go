@@ -13,9 +13,9 @@ var valid = []string{
 	"HELLO",                  // UPPER CASE
 	strings.Repeat("A", 3),   // Min Length
 	strings.Repeat("A", 128), // Max Length
-	"Hello!",                 // Special Chars
+	"Hel:lo!",                // Special Chars
 	".-_+*!$%~@",             // More Special Chars
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.-_+*!$%~@", // All valid chars
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:.-_+*!$%~@", // All valid chars
 	"0123456789", // numbers
 }
 

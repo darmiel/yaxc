@@ -11,7 +11,7 @@ const (
 )
 
 var (
-	APAllowedChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.-_+*!$%~@")
+	APAllowedChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:.-_+*!$%~@")
 )
 
 func ValidateAnywherePath(anywhere string) bool {
@@ -39,7 +39,7 @@ var p *regexp.Regexp
 
 func init() {
 	var err error
-	if p, err = regexp.Compile(`^[A-Za-z0-9.\-_+*!$%~@]{3,128}$`); err != nil {
+	if p, err = regexp.Compile(`^[A-Za-z0-9.\-:_+*!$%~@]{3,128}$`); err != nil {
 		log.Fatalln(err)
 	}
 }
