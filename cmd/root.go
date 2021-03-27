@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/darmiel/yaxc/internal/api"
 	"github.com/spf13/cobra"
 	"os"
 	"time"
@@ -30,11 +29,6 @@ var (
 	cfgFile string
 )
 
-var (
-	settingServer string
-	Api           *api.API
-)
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "yaxc",
@@ -44,17 +38,13 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	Api = &api.API{
-		ServerURL: settingServer,
-	}
 	cobra.CheckErr(rootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.yaxc.yaml)")
-	rootCmd.PersistentFlags().StringVar(&settingServer, "server", "", "URL of API-Server")
-	cobra.CheckErr(viper.BindPFlag("server", rootCmd.PersistentFlags().Lookup("server")))
+	regStr(rootCmd, "server", "", "URL of API-Server")
 }
 
 // initConfig reads in config file and ENV variables if set.
