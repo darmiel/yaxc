@@ -22,6 +22,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -37,8 +38,9 @@ var (
 var (
 	errors int
 
-	lastClipboardData string
-	lastClipboardHash string
+	lastClipboardData   string
+	lastClipboardHash   string
+	ignoreClipboardHash string
 
 	mu    = sync.Mutex{}
 	errMu = sync.Mutex{}
@@ -73,14 +75,8 @@ var watchCmd = &cobra.Command{
 func handleErr(err error, m string) {
 	errMu.Lock()
 	errors++
-	e := errors
 	errMu.Unlock()
-
-	if e > 5 {
-		log.Fatalln("[err]", "(", m, ") :: Error-Limit exceeded:", errors, "::", err)
-		return
-	}
-	log.Println("[err] ERROR reading clipboard:", err, errors, "/ 6")
+	log.Println("[err]", "(", m, ") ::", errors, "errors:", err)
 }
 
 func watchClipboard(path, pass string, done chan int) {
@@ -95,15 +91,18 @@ func watchClipboard(path, pass string, done chan int) {
 			data, err := clipboard.ReadAll()
 			if err != nil {
 				mu.Unlock()
-				handleErr(err, "clipboard-read")
 				continue
 			}
 			errors = 0
+
+			// strip data
+			data = strings.TrimSpace(data)
 
 			if lastClipboardData == data {
 				mu.Unlock()
 				continue
 			}
+			log.Println("[o] Changed!")
 
 			// calculate new hash
 			lastClipboardData = data
@@ -111,17 +110,20 @@ func watchClipboard(path, pass string, done chan int) {
 
 			// check if server has current clipboard
 			serverHash, err := a.GetHash(path)
-			if err != nil {
-				mu.Unlock()
+			if err != nil && err != api.ErrErrResponse {
 				handleErr(err, "read-server-hash")
+				mu.Unlock()
 				continue
 			}
 
-			if serverHash == lastClipboardHash {
-				mu.Unlock()
-				log.Println("[ ~ ] (rea) Server Hash == Local Hash")
-				continue
+			if err != api.ErrErrResponse {
+				if serverHash == lastClipboardHash {
+					log.Println("[ ~ ] (rea) Server Hash == Local Hash")
+					mu.Unlock()
+					continue
+				}
 			}
+			ignoreClipboardHash = serverHash
 
 			// update server hash
 			if err := a.SetContent(path, pass, data); err != nil {
@@ -154,12 +156,14 @@ func watchServer(path, pass string, done chan int) {
 
 			hash, err := a.GetHash(path)
 			if err != nil {
+				if err != api.ErrErrResponse {
+					handleErr(err, "read-server-hash")
+				}
 				mu.Unlock()
-				handleErr(err, "read-server-hash")
 				continue
 			}
 
-			if hash == lastClipboardHash {
+			if hash == lastClipboardHash || hash == ignoreClipboardHash {
 				mu.Unlock()
 				continue
 			}
@@ -172,14 +176,22 @@ func watchServer(path, pass string, done chan int) {
 				continue
 			}
 
+			// empty
+			if strings.TrimSpace(data) == "" {
+				log.Println("[wrn] Received empty data")
+				mu.Unlock()
+				continue
+			}
+
 			log.Println("[ ~ ] Received new data:", data)
 
 			lastClipboardData = data
 			lastClipboardHash = common.MD5Hash(data)
 
 			if err := clipboard.WriteAll(data); err != nil {
-				mu.Unlock()
+				ignoreClipboardHash = hash
 				handleErr(err, "write-clipboard")
+				mu.Unlock()
 				continue
 			}
 

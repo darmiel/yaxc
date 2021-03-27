@@ -8,10 +8,6 @@ type api struct {
 
 func API() *api {
 	server := viper.GetString("server")
-	if server == "" {
-		server = "http://127.0.0.1:1332"
-	}
-
 	return &api{
 		ServerURL: server,
 	}

@@ -30,7 +30,7 @@ func (s *yAxCServer) Start() {
 			}
 			return false
 		},
-		Max:        30,
+		Max:        65,
 		Expiration: 60 * time.Second,
 	}))
 

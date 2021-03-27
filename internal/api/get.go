@@ -1,8 +1,13 @@
 package api
 
 import (
+	"errors"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/imroc/req"
+)
+
+var (
+	ErrErrResponse = errors.New("invalid response")
 )
 
 func (a *api) GetContent(path, passphrase string) (res string, err error) {
@@ -10,6 +15,12 @@ func (a *api) GetContent(path, passphrase string) (res string, err error) {
 	if resp, err = req.Get(a.ServerURL + "/" + path); err != nil {
 		return
 	}
+
+	if resp.Response().StatusCode != 200 {
+		err = ErrErrResponse
+		return
+	}
+
 	res = resp.String()
 	// encryption
 	if passphrase != "" {
@@ -39,6 +50,12 @@ func (a *api) GetHash(path string) (res string, err error) {
 	if resp, err = req.Get(a.ServerURL + "/hash/" + path); err != nil {
 		return
 	}
+
+	if resp.Response().StatusCode != 200 {
+		err = ErrErrResponse
+		return
+	}
+
 	res = resp.String()
 	return
 }
