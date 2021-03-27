@@ -105,35 +105,10 @@ func init() {
 	// ttl
 	regDurP(serveCmd, "default-ttl", "t", 60*time.Second, "Default TTL")
 	regDurP(serveCmd, "min-ttl", "l", 5*time.Second, "Min TTL")
-	regDurP(serveCmd, "max-ttl", "s", 5*time.Minute, "Max TTL")
+	regDurP(serveCmd, "max-ttl", "s", 60*time.Minute, "Max TTL")
 
 	// other
 	regIntP(serveCmd, "max-body-length", "x", 1024, "Max Body Length")
 	regBoolP(serveCmd, "enable-encryption", "e", true, "Enable Encryption")
 	regStr(serveCmd, "proxy-header", "", "Proxy Header")
-}
-
-func regStrP(cmd *cobra.Command, name, shorthand, def, usage string) {
-	cmd.PersistentFlags().StringP(name, shorthand, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
-}
-func regStr(cmd *cobra.Command, name, def, usage string) {
-	cmd.PersistentFlags().String(name, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
-}
-func regDurP(cmd *cobra.Command, name, shorthand string, def time.Duration, usage string) {
-	cmd.PersistentFlags().DurationP(name, shorthand, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
-}
-func regIntP(cmd *cobra.Command, name, shorthand string, def int, usage string) {
-	cmd.PersistentFlags().IntP(name, shorthand, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
-}
-func regInt(cmd *cobra.Command, name string, def int, usage string) {
-	cmd.PersistentFlags().Int(name, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
-}
-func regBoolP(cmd *cobra.Command, name, shorthand string, def bool, usage string) {
-	cmd.PersistentFlags().BoolP(name, shorthand, def, usage)
-	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }

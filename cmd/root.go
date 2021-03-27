@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/darmiel/yaxc/internal/api"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -26,6 +28,11 @@ import (
 
 var (
 	cfgFile string
+)
+
+var (
+	settingServer string
+	Api           *api.API
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -37,13 +44,16 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	Api = &api.API{
+		ServerURL: settingServer,
+	}
 	cobra.CheckErr(rootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.yaxc.yaml)")
-	rootCmd.PersistentFlags().String("server", "", "URL of API-Server")
+	rootCmd.PersistentFlags().StringVar(&settingServer, "server", "", "URL of API-Server")
 	cobra.CheckErr(viper.BindPFlag("server", rootCmd.PersistentFlags().Lookup("server")))
 }
 
@@ -68,4 +78,31 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// misc
+
+func regStrP(cmd *cobra.Command, name, shorthand, def, usage string) {
+	cmd.PersistentFlags().StringP(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regStr(cmd *cobra.Command, name, def, usage string) {
+	cmd.PersistentFlags().String(name, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regDurP(cmd *cobra.Command, name, shorthand string, def time.Duration, usage string) {
+	cmd.PersistentFlags().DurationP(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regIntP(cmd *cobra.Command, name, shorthand string, def int, usage string) {
+	cmd.PersistentFlags().IntP(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regInt(cmd *cobra.Command, name string, def int, usage string) {
+	cmd.PersistentFlags().Int(name, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
+func regBoolP(cmd *cobra.Command, name, shorthand string, def bool, usage string) {
+	cmd.PersistentFlags().BoolP(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }
