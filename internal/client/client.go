@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/darmiel/yaxc/internal/api"
 	"sync"
+	"time"
 )
 
 var (
@@ -16,6 +17,9 @@ type Check struct {
 	mu   sync.Mutex
 	path string
 	pass string
+	//
+	previousClipboard string
+	lastUpdate        time.Time
 }
 
 func NewCheck(path, pass string) *Check {

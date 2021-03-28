@@ -49,7 +49,7 @@ var watchCmd = &cobra.Command{
 
 		if !watchIgnoreClient {
 			log.Println("  [~] Starting Client Update Watcher")
-			go client.WatchClient(check, 100*time.Millisecond, done)
+			go client.WatchClient(check, 50*time.Millisecond, done)
 		}
 
 		if watchIgnoreServer && watchIgnoreClient {

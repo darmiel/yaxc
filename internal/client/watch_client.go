@@ -2,7 +2,6 @@ package client
 
 import (
 	"github.com/atotto/clipboard"
-	"github.com/darmiel/yaxc/internal/common"
 	"log"
 	"strings"
 	"time"
@@ -43,22 +42,10 @@ func (c *Check) CheckClient() (err error) {
 		return
 	}
 
-	// calculate hash
-	var ch string
-	if ch = common.MD5Hash(cb); ch == "" {
-		err = ErrEmptyHash
+	if c.previousClipboard == cb {
 		return
 	}
-
-	// get hash from server
-	var sh string
-	sh, _ = c.a.GetHash(c.path)
-	if strings.TrimSpace(sh) != "" {
-		// compare hashes
-		if ch == sh {
-			return
-		}
-	}
+	c.previousClipboard = cb
 
 	// upload to server
 	err = c.a.SetContent(c.path, c.pass, cb)
