@@ -2,13 +2,13 @@ package api
 
 import "github.com/spf13/viper"
 
-type api struct {
+type Api struct {
 	ServerURL string
 }
 
-func API() *api {
+func API() *Api {
 	server := viper.GetString("server")
-	return &api{
+	return &Api{
 		ServerURL: server,
 	}
 }
