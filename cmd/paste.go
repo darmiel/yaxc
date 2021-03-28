@@ -46,6 +46,8 @@ var pasteCmd = &cobra.Command{
 			return
 		}
 
+		log.Println("Pipe Input: '" + pipe + "'")
+
 		if err := api.API().SetContent(pasteAnywherePath, pastePassphrase, pipe); err != nil {
 			log.Fatalln("ERROR ::", err)
 			return

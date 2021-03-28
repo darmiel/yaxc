@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"github.com/atotto/clipboard"
 	"github.com/darmiel/yaxc/internal/api"
 	"github.com/darmiel/yaxc/internal/common"
@@ -63,6 +64,11 @@ func (c *Check) CheckServer() (err error) {
 		}
 	}
 
+	// compare last update
+	if c.previousClipboard != cb {
+		return errors.New("ignored because previous clipboard differ")
+	}
+
 	// get data from server
 	var sd string
 	if sd, err = c.a.GetContent(c.path, c.pass); err != nil {
@@ -70,7 +76,8 @@ func (c *Check) CheckServer() (err error) {
 	}
 
 	// update contents
+	c.previousClipboard = sd
 	err = clipboard.WriteAll(sd)
-	log.Println("Wrote: '" + sd + "' to client")
+	log.Println("<= Wrote: '" + sd + "' to client")
 	return
 }

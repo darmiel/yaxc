@@ -28,10 +28,6 @@ func ReadPipe() (res string, err error) {
 		}
 		output = append(output, input)
 	}
-	res = string(output)
-	// remove new line at the end
-	if strings.HasSuffix(res, "\n") {
-		res = res[:len(res)-1]
-	}
+	res = strings.TrimSpace(string(output))
 	return
 }

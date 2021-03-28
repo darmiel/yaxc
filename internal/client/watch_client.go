@@ -3,7 +3,6 @@ package client
 import (
 	"github.com/atotto/clipboard"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -38,7 +37,7 @@ func (c *Check) CheckClient() (err error) {
 	cb, _ = clipboard.ReadAll()
 
 	// ignore empty clipboard
-	if strings.TrimSpace(cb) == "" {
+	if cb == "" {
 		return
 	}
 
@@ -49,6 +48,6 @@ func (c *Check) CheckClient() (err error) {
 
 	// upload to server
 	err = c.a.SetContent(c.path, c.pass, cb)
-	log.Println("Wrote: '" + cb + "' to server")
+	log.Println("=> Wrote: '" + cb + "' to server")
 	return
 }
