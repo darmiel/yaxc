@@ -81,3 +81,23 @@ Global Flags:
       --server string   URL of API-Server
 
 ```
+
+## Client
+### Watch
+```bash
+Watch Clipboard
+
+Usage:
+  yaxc watch [flags]
+
+Flags:
+  -a, --anywhere string     Path (Anywhere)
+  -h, --help                help for watch
+      --ignore-client       Ignore Client Updates
+      --ignore-server       Ignore Server Updates
+  -s, --passphrase string   Encryption Key
+
+Global Flags:
+      --config string   config file (default is $HOME/.yaxc.yaml)
+      --server string   URL of API-Server (default "https://yaxc.d2a.io")
+```
