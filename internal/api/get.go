@@ -12,7 +12,7 @@ var (
 
 func (a *Api) GetContent(path, passphrase string) (res string, err error) {
 	var resp *req.Resp
-	if resp, err = req.Get(a.ServerURL + "/" + path); err != nil {
+	if resp, err = req.Get(a.UrlGetContents(path, "")); err != nil {
 		return
 	}
 
@@ -41,13 +41,15 @@ func (a *Api) SetContent(path, passphrase, content string) (err error) {
 		}
 		content = string(b)
 	}
-	_, err = req.Post(a.ServerURL+"/"+path, content)
+	hash := common.MD5Hash(content)
+	// with custom hash
+	_, err = req.Post(a.UrlSetContents(path, hash, "", 0), content)
 	return
 }
 
 func (a *Api) GetHash(path string) (res string, err error) {
 	var resp *req.Resp
-	if resp, err = req.Get(a.ServerURL + "/hash/" + path); err != nil {
+	if resp, err = req.Get(a.UrlGetHash(path)); err != nil {
 		return
 	}
 

@@ -42,6 +42,10 @@ func ValidateAnywherePath(anywhere string) bool {
 }
 
 func ValidateHex(anywhere string) bool {
+	l := len(anywhere)
+	if l < 1 || l > 256 {
+		return false
+	}
 	return !ContainsOtherThan(anywhere, HexAllowedChars)
 }
 
