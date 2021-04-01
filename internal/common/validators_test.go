@@ -64,6 +64,14 @@ func TestValidateAnywherePath(t *testing.T) {
 	}
 }
 
+func TestContainsOtherThan(t *testing.T) {
+	AssertFalse(t, ContainsOtherThan("hello", []byte("hello")))
+	AssertTrue(t, ContainsOtherThan("hello!", []byte("hello")))
+	AssertFalse(t, ContainsOtherThan("Hello", []byte("helloH")))
+	AssertTrue(t, ContainsOtherThan("Hello", []byte("hello")))
+	AssertTrue(t, ContainsOtherThan("Hello!", []byte("hello!")))
+}
+
 // AssertEqual checks if values are equal
 func AssertEqual(t *testing.T, a interface{}, b interface{}) {
 	if a == b {

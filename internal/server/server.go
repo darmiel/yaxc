@@ -39,9 +39,17 @@ func (s *yAxCServer) Start() {
 		return ctx.SendString(body)
 	})
 
+	// GET contents
 	s.App.Get("/:anywhere", s.handleGetAnywhere)
-	s.App.Post("/:anywhere", s.handlePostAnywhere)
+
+	// GET hash
 	s.App.Get("/hash/:anywhere", s.handleGetHashAnywhere)
+
+	// SET contents, auto hash
+	s.App.Post("/:anywhere", s.handlePostAnywhere)
+
+	// SET contents, custom hash
+	s.App.Post("/:anywhere/:hash", s.handlePostAnywhereWithHash)
 
 	if err := s.App.Listen(s.BindAddress); err != nil {
 		log.Critical(err)

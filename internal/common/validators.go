@@ -11,28 +11,38 @@ const (
 )
 
 var (
-	APAllowedChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:.-_+*!$%~@")
+	APAllowedChars  = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789:.-_+*!$%~@")
+	HexAllowedChars = []byte("0123456789abcdef")
 )
+
+func ContainsOtherThan(str string, allowed []byte) bool {
+	for _, c := range str {
+		b := byte(c)
+		v := false
+		// check if allowed array contains
+		for _, a := range allowed {
+			if b == a {
+				v = true
+				break
+			}
+		}
+		if !v {
+			return true
+		}
+	}
+	return false
+}
 
 func ValidateAnywherePath(anywhere string) bool {
 	l := len(anywhere)
 	if l < APMinLength || l > APMaxLength {
 		return false
 	}
-	for _, c := range anywhere {
-		b := byte(c)
-		f := false
-		for _, a := range APAllowedChars {
-			if a == b {
-				f = true
-				break
-			}
-		}
-		if !f {
-			return false
-		}
-	}
-	return true
+	return !ContainsOtherThan(anywhere, APAllowedChars)
+}
+
+func ValidateHex(anywhere string) bool {
+	return !ContainsOtherThan(anywhere, HexAllowedChars)
 }
 
 var p *regexp.Regexp

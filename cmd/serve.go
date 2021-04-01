@@ -108,7 +108,7 @@ func init() {
 	regDurP(serveCmd, "max-ttl", "s", 60*time.Minute, "Max TTL")
 
 	// other
-	regIntP(serveCmd, "max-body-length", "x", 1024, "Max Body Length")
+	regIntP(serveCmd, "max-body-length", "x", 8192, "Max Body Length")
 	regBoolP(serveCmd, "enable-encryption", "e", true, "Enable Encryption")
 	regStr(serveCmd, "proxy-header", "", "Proxy Header")
 }
