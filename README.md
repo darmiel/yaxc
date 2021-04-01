@@ -2,6 +2,9 @@
 Yet Another Cross Clipboard
 > Allan, please add details!
 
+## Demo
+https://youtu.be/OVpH70byKRQ
+
 ## Server
 
 ### Set Data
