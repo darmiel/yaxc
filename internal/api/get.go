@@ -43,7 +43,8 @@ func (a *Api) SetContent(path, passphrase, content string) (err error) {
 	}
 	hash := common.MD5Hash(content)
 	// with custom hash
-	_, err = req.Post(a.UrlSetContents(path, hash, "", 0), content)
+	url := a.UrlSetContents(path, hash, "", 0)
+	_, err = req.Post(url, content)
 	return
 }
 

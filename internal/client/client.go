@@ -18,15 +18,18 @@ type Check struct {
 	path string
 	pass string
 	//
+	useBase64 bool
+	//
 	previousClipboard string
 	lastUpdate        time.Time
 }
 
-func NewCheck(path, pass string) *Check {
+func NewCheck(path, pass string, b64 bool) *Check {
 	return &Check{
-		a:    api.API(),
-		mu:   sync.Mutex{},
-		path: path,
-		pass: pass,
+		a:         api.API(),
+		mu:        sync.Mutex{},
+		path:      path,
+		pass:      pass,
+		useBase64: b64,
 	}
 }

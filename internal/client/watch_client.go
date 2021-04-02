@@ -1,8 +1,9 @@
 package client
 
 import (
+	"fmt"
 	"github.com/atotto/clipboard"
-	"log"
+	"github.com/darmiel/yaxc/internal/common"
 	"time"
 )
 
@@ -11,11 +12,11 @@ func WatchClient(c *Check, d time.Duration, done chan bool) {
 	for {
 		select {
 		case <-done:
-			log.Println("[Watch Client] Stopping ...")
+			fmt.Println(common.StyleInfo(), "Stopping", common.WordClient(), "Watcher")
 			return
 		case <-t.C:
 			if err := c.CheckClient(); err != nil {
-				log.Println("[Watch Client] WARN:", err)
+				fmt.Println(common.StyleWarn(), err)
 			}
 			break
 		}
@@ -34,7 +35,7 @@ func (c *Check) CheckClient() (err error) {
 
 	// get clipboard
 	var cb string
-	cb, _ = clipboard.ReadAll()
+	cb, _ = common.GetClipboard(c.useBase64)
 
 	// ignore empty clipboard
 	if cb == "" {
@@ -48,6 +49,6 @@ func (c *Check) CheckClient() (err error) {
 
 	// upload to server
 	err = c.a.SetContent(c.path, c.pass, cb)
-	log.Println("=> Wrote: '" + cb + "' to server")
+	fmt.Println(common.StyleUpdate(), common.WordServer(), "<-", common.PrettyLimit(cb, 48))
 	return
 }
