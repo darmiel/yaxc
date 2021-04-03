@@ -1,13 +1,11 @@
 package client
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/atotto/clipboard"
 	"github.com/darmiel/yaxc/internal/api"
 	"github.com/darmiel/yaxc/internal/common"
-	"github.com/muesli/termenv"
 	"time"
 )
 
@@ -54,10 +52,6 @@ func (c *Check) CheckServer() (err error) {
 	cb, _ = common.GetClipboard(c.useBase64)
 	empty := cb == ""
 
-	if c.useBase64 {
-		cb = base64.StdEncoding.EncodeToString([]byte(cb))
-	}
-
 	if !empty {
 		// calculate hash
 		var ch string
@@ -81,16 +75,6 @@ func (c *Check) CheckServer() (err error) {
 	var sd string
 	if sd, err = c.a.GetContent(c.path, c.pass); err != nil {
 		return
-	}
-
-	if c.useBase64 {
-		var b []byte
-		if b, err = base64.StdEncoding.DecodeString(sd); err != nil {
-			return
-		}
-		sd = string(b)
-		fmt.Println(common.StyleInfo(), "Decoded clipboard to",
-			termenv.String(sd).Foreground(common.Profile().Color("#66C2CD")))
 	}
 
 	// update contents
