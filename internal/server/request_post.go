@@ -81,7 +81,7 @@ func (s *yAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err
 			fmt.Sprintf("ERROR (Val): %v\nERROR (Hsh): %v", errVal, errHsh))
 	}
 
-	log.Debug(ctx.IP(), "updated", path, "with hash", hash)
+	//log.Debug(ctx.IP(), "updated", path, "with hash", hash)
 
 	return ctx.Status(200).SendString(content)
 }

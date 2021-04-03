@@ -1,4 +1,4 @@
-package fcache
+package bcache
 
 import "time"
 
@@ -21,7 +21,7 @@ func (c *Cache) expiration(d time.Duration) nodeExpiration {
 		return 0
 	}
 	if d == ExpirationDefault {
-		d = c.de
+		d = c.defaultExpiration
 	}
 	return nodeExpiration(time.Now().Add(d).Unix())
 }

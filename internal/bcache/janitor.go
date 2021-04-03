@@ -1,4 +1,4 @@
-package fcache
+package bcache
 
 import (
 	"fmt"
@@ -22,13 +22,13 @@ func (c *Cache) janitorService() {
 
 func (c *Cache) janitor() {
 	c.mu.Lock()
-	for k, v := range c.val {
+	for k, v := range c.values {
 		// nil node
 		if v == nil || v.expires.IsExpired() {
 			fmt.Println(prefix,
 				termenv.String("JANITOR").Foreground(common.Profile().Color("#A8CC8C")),
 				"Deleting", termenv.String(k).Foreground(common.Profile().Color("#A8CC8C")))
-			delete(c.val, k)
+			delete(c.values, k)
 		}
 	}
 	c.mu.Unlock()

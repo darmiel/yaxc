@@ -1,4 +1,4 @@
-package fcache
+package bcache
 
 import (
 	"fmt"
@@ -17,21 +17,21 @@ func init() {
 
 type node struct {
 	expires nodeExpiration
-	value   interface{}
+	value   []byte
 }
 
 type Cache struct {
-	mu              sync.Mutex
-	val             map[string]*node
-	de              time.Duration
-	cleanerInterval time.Duration
+	mu                sync.Mutex
+	values            map[string]*node
+	defaultExpiration time.Duration
+	cleanerInterval   time.Duration
 }
 
 func NewCache(defaultExpiration, cleanerInterval time.Duration) *Cache {
 	c := &Cache{
-		val:             make(map[string]*node),
-		de:              defaultExpiration,
-		cleanerInterval: cleanerInterval,
+		values:            make(map[string]*node),
+		defaultExpiration: defaultExpiration,
+		cleanerInterval:   cleanerInterval,
 	}
 	if cleanerInterval != 0 {
 		go c.janitorService()
@@ -39,30 +39,32 @@ func NewCache(defaultExpiration, cleanerInterval time.Duration) *Cache {
 	return c
 }
 
-func (c *Cache) Set(key string, value interface{}, expiration time.Duration) {
+func (c *Cache) Set(key string, value []byte, expiration time.Duration) {
 	c.mu.Lock()
 
 	// TODO: remove debug
 	fmt.Println(prefix,
+		termenv.String("<-").Foreground(common.Profile().Color("#DBAB79")),
 		"Set",
 		termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
 		termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
 		value)
 
-	c.val[key] = &node{
+	c.values[key] = &node{
 		expires: c.expiration(expiration),
 		value:   value,
 	}
 	c.mu.Unlock()
 }
 
-func (c *Cache) Get(key string) (interface{}, bool) {
+func (c *Cache) Get(key string) ([]byte, bool) {
 	c.mu.Lock()
-	if v, o := c.val[key]; o && v != nil {
+	if v, o := c.values[key]; o && v != nil {
 		if !v.expires.IsExpired() {
 
 			// TODO: remove debug
 			fmt.Println(prefix,
+				termenv.String("->").Foreground(common.Profile().Color("#66C2CD")),
 				"Get",
 				termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
 				termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
