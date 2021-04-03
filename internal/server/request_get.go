@@ -47,7 +47,7 @@ func (s *yAxCServer) handleGetHashAnywhere(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	log.Warning(ctx.IP(), "requested HASH", path, "with result", res)
+	log.Warning(ctx.IP(), "requested HASH", path, "with result", res, "::", res[:4])
 
 	if res == "" {
 		ctx.Status(404)

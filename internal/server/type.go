@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 	"errors"
+	"github.com/darmiel/yaxc/internal/fcache"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/op/go-logging"
 	"os"
 	"time"
-	"zgo.at/zcache"
 )
 
 var (
@@ -60,7 +60,7 @@ func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
 	if s.RedisAddress == "" {
 		// use cache backend
 		s.Backend = &CacheBackend{
-			cache:   zcache.New(s.DefaultTTL, s.DefaultTTL+time.Minute),
+			cache:   fcache.NewCache(s.DefaultTTL, 10*time.Second),
 			errCast: errors.New("not a string"),
 		}
 	} else {

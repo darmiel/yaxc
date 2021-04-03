@@ -1,12 +1,12 @@
 package server
 
 import (
+	"github.com/darmiel/yaxc/internal/fcache"
 	"time"
-	"zgo.at/zcache"
 )
 
 type CacheBackend struct {
-	cache   *zcache.Cache
+	cache   *fcache.Cache
 	errCast error
 }
 
