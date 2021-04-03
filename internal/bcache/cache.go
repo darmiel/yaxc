@@ -17,7 +17,7 @@ func init() {
 
 type node struct {
 	expires nodeExpiration
-	value   []byte
+	value   interface{}
 }
 
 type Cache struct {
@@ -34,12 +34,12 @@ func NewCache(defaultExpiration, cleanerInterval time.Duration) *Cache {
 		cleanerInterval:   cleanerInterval,
 	}
 	if cleanerInterval != 0 {
-		go c.janitorService()
+		// go c.janitorService()
 	}
 	return c
 }
 
-func (c *Cache) Set(key string, value []byte, expiration time.Duration) {
+func (c *Cache) Set(key string, value interface{}, expiration time.Duration) {
 	c.mu.Lock()
 
 	// TODO: remove debug
@@ -57,7 +57,7 @@ func (c *Cache) Set(key string, value []byte, expiration time.Duration) {
 	c.mu.Unlock()
 }
 
-func (c *Cache) Get(key string) ([]byte, bool) {
+func (c *Cache) Get(key string) (interface{}, bool) {
 	c.mu.Lock()
 	if v, o := c.values[key]; o && v != nil {
 		if !v.expires.IsExpired() {

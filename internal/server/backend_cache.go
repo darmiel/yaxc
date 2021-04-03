@@ -19,18 +19,22 @@ func (b *CacheBackend) GetHash(key string) (res string, err error) {
 }
 
 func (b *CacheBackend) Set(key, value string, ttl time.Duration) error {
-	b.cache.Set("val::"+key, []byte(value), ttl)
+	b.cache.Set("val::"+key, value, ttl)
 	return nil
 }
 
 func (b *CacheBackend) SetHash(key, value string, ttl time.Duration) error {
-	b.cache.Set("hash::"+key, []byte(value), ttl)
+	b.cache.Set("hash::"+key, value, ttl)
 	return nil
 }
 
 func (b *CacheBackend) get(key string) (res string, err error) {
 	if v, ok := b.cache.Get(key); ok {
-		res = string(v)
+		if r, o := v.(string); o {
+			res = r
+		} else {
+			err = b.errCast
+		}
 	}
 	return
 }
