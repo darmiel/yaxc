@@ -53,5 +53,6 @@ func (s *yAxCServer) Start() {
 
 	if err := s.App.Listen(s.BindAddress); err != nil {
 		log.Critical(err)
+		panic(err)
 	}
 }

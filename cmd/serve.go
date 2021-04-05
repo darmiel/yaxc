@@ -16,10 +16,15 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"github.com/darmiel/yaxc/internal/common"
 	"github.com/darmiel/yaxc/internal/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -86,7 +91,22 @@ var serveCmd = &cobra.Command{
 			EnableEncryption: enableEnc,
 			ProxyHeader:      proxyHeader,
 		})
-		s.Start()
+		go s.Start()
+
+		fmt.Println(common.StyleInfo(), "Started clipboard-server. Press CTRL-C to stop.")
+		sc := make(chan os.Signal, 1)
+		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
+		<-sc
+
+		// shutdown gracefully
+		fmt.Println(common.StyleInfo(), "Stopping clipboard-server.")
+		if s.App != nil {
+			if err := s.App.Shutdown(); err != nil {
+				fmt.Println(common.StyleWarn(), "Error shutting down:", err)
+			} else {
+				fmt.Println(common.StyleInfo(), "OK: Shut down")
+			}
+		}
 	},
 }
 
