@@ -24,7 +24,7 @@ func NewCache(defaultExpiration, cleanerInterval time.Duration) *Cache {
 		cleanerInterval:   cleanerInterval,
 	}
 	if cleanerInterval != 0 {
-		// go c.janitorService()
+		go c.janitorService()
 	}
 	return c
 }
