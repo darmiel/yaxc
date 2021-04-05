@@ -23,10 +23,10 @@ jobs:
 
       - name: Build image
         if: success()
-        run: docker build -t ${GITHUB_REPOSITORY}:${IMAGE_TAG} .
+        run: docker build -t hywse/yaxc:${IMAGE_TAG} .
 
       - name: Push to docker registry
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push ${GITHUB_REPOSITORY}:${IMAGE_TAG}
+          args: push hywse/yaxc:${IMAGE_TAG}
