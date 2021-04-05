@@ -1,7 +1,7 @@
 FROM golang:latest AS builder
 
 LABEL maintainer="darmiel <hi@d2a.io>"
-LABEL org.opencontainers.image.source="https://github.com/darmiel/yaxc"
+LABEL org.opencontainers.image.source = "https://github.com/darmiel/yaxc"
 
 WORKDIR /usr/src/app
 
