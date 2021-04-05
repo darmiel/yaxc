@@ -54,7 +54,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${GITHUB_REPOSITORY}:${IMAGE_TAG:=latest}
+          tags: ghcr.io/${{GITHUB_REPOSITORY}}:${{IMAGE_TAG}}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
