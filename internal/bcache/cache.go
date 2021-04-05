@@ -43,12 +43,14 @@ func (c *Cache) Set(key string, value interface{}, expiration time.Duration) {
 	c.mu.Lock()
 
 	// TODO: remove debug
-	fmt.Println(prefix,
-		termenv.String("<-").Foreground(common.Profile().Color("#DBAB79")),
-		"Set",
-		termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
-		termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
-		value)
+	if b, o := value.([]byte); o {
+		fmt.Println(prefix,
+			termenv.String("<-").Foreground(common.Profile().Color("#DBAB79")),
+			"Set",
+			termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
+			termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
+			common.PrettyLimit(string(b), 48))
+	}
 
 	c.values[key] = &node{
 		expires: c.expiration(expiration),
@@ -62,13 +64,14 @@ func (c *Cache) Get(key string) (interface{}, bool) {
 	if v, o := c.values[key]; o && v != nil {
 		if !v.expires.IsExpired() {
 
-			// TODO: remove debug
-			fmt.Println(prefix,
-				termenv.String("->").Foreground(common.Profile().Color("#66C2CD")),
-				"Get",
-				termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
-				termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
-				v.value)
+			if b, o := v.value.([]byte); o {
+				fmt.Println(prefix,
+					termenv.String("->").Foreground(common.Profile().Color("#66C2CD")),
+					"Get",
+					termenv.String(key).Foreground(common.Profile().Color("#A8CC8C")),
+					termenv.String("=").Foreground(common.Profile().Color("#DBAB79")),
+					common.PrettyLimit(string(b), 48))
+			}
 
 			c.mu.Unlock()
 			return v.value, true
