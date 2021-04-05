@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
+	"github.com/muesli/termenv"
 	"strings"
 	"time"
 )
@@ -13,7 +14,6 @@ var errEncryptionNotEnabled = errors.New("encryption not enabled")
 
 func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 	path := strings.TrimSpace(ctx.Params("anywhere"))
-	log.Debug("requested path", path)
 	return s.setAnywhereWithHash(ctx, path, "")
 }
 
@@ -81,7 +81,12 @@ func (s *yAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err
 			fmt.Sprintf("ERROR (Val): %v\nERROR (Hsh): %v", errVal, errHsh))
 	}
 
-	//log.Debug(ctx.IP(), "updated", path, "with hash", hash)
+	fmt.Println(common.StyleServe(),
+		termenv.String(ctx.IP()).Foreground(common.Profile().Color("#DBAB79")),
+		"updated",
+		termenv.String(path).Foreground(common.Profile().Color("#D290E4")),
+		"with hash",
+		termenv.String(hash).Foreground(common.Profile().Color("#71BEF2")))
 
 	return ctx.Status(200).SendString(content)
 }

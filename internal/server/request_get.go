@@ -1,8 +1,10 @@
 package server
 
 import (
+	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
+	"github.com/muesli/termenv"
 	"strings"
 )
 
@@ -30,7 +32,11 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 		}
 	}
 
-	// log.Warning(ctx.IP(), "requested VALUE", path)
+	fmt.Println(common.StyleServe(),
+		termenv.String(ctx.IP()).Foreground(common.Profile().Color("#DBAB79")),
+		"requested",
+		termenv.String("value").Foreground(common.Profile().Color("#A8CC8C")),
+		termenv.String(path).Foreground(common.Profile().Color("#D290E4")))
 
 	if res == "" {
 		ctx.Status(404)
@@ -47,7 +53,11 @@ func (s *yAxCServer) handleGetHashAnywhere(ctx *fiber.Ctx) (err error) {
 		return
 	}
 
-	// log.Warning(ctx.IP(), "requested HASH", path, "with result", res, "::", res[:4])
+	fmt.Println(common.StyleServe(),
+		termenv.String(ctx.IP()).Foreground(common.Profile().Color("#DBAB79")),
+		"requested",
+		termenv.String("hash").Foreground(common.Profile().Color("#E88388")),
+		termenv.String(path).Foreground(common.Profile().Color("#D290E4")))
 
 	if res == "" {
 		ctx.Status(404)

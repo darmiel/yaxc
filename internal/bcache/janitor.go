@@ -1,9 +1,6 @@
 package bcache
 
 import (
-	"fmt"
-	"github.com/darmiel/yaxc/internal/common"
-	"github.com/muesli/termenv"
 	"time"
 )
 
@@ -13,9 +10,7 @@ func (c *Cache) janitorService() {
 	}
 	for {
 		time.Sleep(c.cleanerInterval)
-		fmt.Println(prefix,
-			termenv.String("JANITOR").Foreground(common.Profile().Color("#A8CC8C")),
-			"Starting ...")
+		printDebugJanitorStart()
 		c.janitor()
 	}
 }
@@ -25,9 +20,7 @@ func (c *Cache) janitor() {
 	for k, v := range c.values {
 		// nil node
 		if v == nil || v.expires.IsExpired() {
-			fmt.Println(prefix,
-				termenv.String("JANITOR").Foreground(common.Profile().Color("#A8CC8C")),
-				"Deleting", termenv.String(k).Foreground(common.Profile().Color("#A8CC8C")))
+			printDebugJanitorDelete(k)
 			delete(c.values, k)
 		}
 	}

@@ -31,6 +31,14 @@ func StyleUpdate() termenv.Style {
 	return termenv.String("UPDT |").Foreground(Profile().Color("0")).Background(Profile().Color("#D290E4"))
 }
 
+func StyleServe() termenv.Style {
+	return termenv.String("SRVE |").Foreground(Profile().Color("0")).Background(Profile().Color("#66C2CD"))
+}
+
+func StyleCache() termenv.Style {
+	return termenv.String("CCHE |").Foreground(Profile().Color("0")).Background(Profile().Color("#D290E4"))
+}
+
 func WordClient() termenv.Style {
 	return termenv.String("Client").Foreground(Profile().Color("#DBAB79"))
 }
