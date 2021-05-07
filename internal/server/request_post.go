@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
 	"github.com/muesli/termenv"
 	"strings"
 	"time"
@@ -13,13 +14,13 @@ import (
 var errEncryptionNotEnabled = errors.New("encryption not enabled")
 
 func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
-	path := strings.TrimSpace(ctx.Params("anywhere"))
+	path := utils.CopyString(strings.TrimSpace(ctx.Params("anywhere")))
 	return s.setAnywhereWithHash(ctx, path, "")
 }
 
 func (s *yAxCServer) handlePostAnywhereWithHash(ctx *fiber.Ctx) (err error) {
-	path := strings.TrimSpace(ctx.Params("anywhere"))
-	hash := strings.TrimSpace(ctx.Params("hash"))
+	path := utils.CopyString(strings.TrimSpace(ctx.Params("anywhere")))
+	hash := utils.CopyString(strings.TrimSpace(ctx.Params("hash")))
 	// validate hash
 	if !common.ValidateHex(hash) {
 		return ctx.Status(400).SendString("ERROR: Invalid hash")
