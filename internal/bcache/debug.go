@@ -12,7 +12,7 @@ func printDebugSet(key string, value interface{}) {
 	if !debugEnabled {
 		return
 	}
-	if b, o := value.([]byte); o {
+	if b, o := value.(string); o {
 		fmt.Println(common.StyleCache(),
 			termenv.String("<-").Foreground(common.Profile().Color("#DBAB79")),
 			"Set",
@@ -25,7 +25,7 @@ func printDebugGet(key string, value interface{}) {
 	if !debugEnabled {
 		return
 	}
-	if b, o := value.([]byte); o {
+	if b, o := value.(string); o {
 		fmt.Println(common.StyleCache(),
 			termenv.String("->").Foreground(common.Profile().Color("#66C2CD")),
 			"Get",
