@@ -31,8 +31,9 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "yaxc",
-	Short: "Yet Another Cross Clipboard",
+	Use:     "yaxc",
+	Short:   "Yet Another Cross Clipboard",
+	Version: "1.1.0",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
