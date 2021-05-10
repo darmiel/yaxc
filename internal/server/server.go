@@ -10,7 +10,8 @@ import (
 func (s *yAxCServer) Start() {
 	log.Info("Starting YAxC server on", s.BindAddress)
 
-	cfg := &fiber.Config{}
+	cfg := &fiber.Config{Immutable: true}
+
 	if s.ProxyHeader != "" {
 		if s.ProxyHeader == "$proxy" {
 			s.ProxyHeader = "X-Forwarded-For"
