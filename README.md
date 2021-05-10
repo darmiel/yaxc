@@ -5,6 +5,11 @@ Yet Another Cross Clipboard
 ## Demo
 https://youtu.be/OVpH70byKRQ
 
+```bash
+alias yfll='yaxc force pull -a daniel-temp'
+alias yfsh='yaxc force push -a daniel-temp'
+```
+
 ## Server
 
 ### Set Data
