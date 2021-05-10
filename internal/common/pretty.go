@@ -54,3 +54,7 @@ func PrettyLimit(in string, max int) string {
 	}
 	return in
 }
+
+func Color(style, color string) termenv.Style {
+	return termenv.String(style).Foreground(Profile().Color("#" + color))
+}

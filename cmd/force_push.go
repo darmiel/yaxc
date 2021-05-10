@@ -27,6 +27,8 @@ var (
 	fpAnywherePath string
 	fpSecret       string
 	fpBase64       bool
+	fpHideSecret   bool
+	fpHideURL      bool
 )
 
 // forcePushCmd represents the forcePush command
@@ -46,9 +48,19 @@ var forcePushCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(common.StyleInfo(), "Sent contents to", fpAnywherePath)
+		fmt.Println(common.StyleInfo(), "Sent ->", common.Color("/"+fpAnywherePath, "A8CC8C"))
 		if len(fpSecret) != 0 {
-			fmt.Println(common.StyleInfo(), "using secret", strings.Repeat("*", len(fpSecret)))
+			var secret string
+			if fpHideSecret {
+				secret = strings.Repeat("*", len(fpSecret)) + " (hidden)"
+			} else {
+				secret = fpSecret
+			}
+			fmt.Println(common.StyleInfo(), "🔐", common.Color(secret, "A8CC8C"))
+		}
+
+		if !fpHideURL {
+			fmt.Println(common.StyleDebug(), "URL:", api.API().UrlGetContents(fpAnywherePath, fpSecret))
 		}
 	},
 }
@@ -58,7 +70,10 @@ func init() {
 
 	forcePushCmd.PersistentFlags().StringVarP(&fpAnywherePath, "anywhere", "a", "", "Anywhere Path")
 	forcePushCmd.PersistentFlags().StringVarP(&fpSecret, "secret", "s", "", "Encryption Key")
+
 	forcePushCmd.PersistentFlags().BoolVarP(&fpBase64, "base64", "b", false, "Use Base64")
+	forcePushCmd.PersistentFlags().BoolVarP(&fpHideSecret, "hide-secret", "S", false, "Hide Secret")
+	forcePushCmd.PersistentFlags().BoolVarP(&fpHideURL, "hide-url", "U", false, "Hide URL")
 
 	cobra.CheckErr(cobra.MarkFlagRequired(forcePushCmd.PersistentFlags(), "anywhere"))
 }
