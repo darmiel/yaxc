@@ -19,36 +19,31 @@ import (
 	"fmt"
 	"github.com/darmiel/yaxc/internal/api"
 	"github.com/darmiel/yaxc/internal/common"
-	"github.com/spf13/cobra"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
-var (
-	fpAnywherePath string
-	fpSecret       string
-	fpBase64       bool
-	fpHideSecret   bool
-	fpHideURL      bool
-)
-
-// forcePushCmd represents the forcePush command
-var forcePushCmd = &cobra.Command{
-	Use:   "force-push",
-	Short: "One-Time push to YAxC",
-	Long:  `One-Time push to YAxC`,
+// pushCmd represents the push command
+var pushCmd = &cobra.Command{
+	Use:   "push",
+	Short: "Force Push Clipboard From Server",
+	Long:  "Force Push Clipboard To Server",
 	Run: func(cmd *cobra.Command, args []string) {
 		cb, err := common.GetClipboard(fpBase64)
 		if err != nil {
-			fmt.Println(common.StyleWarn(), "Error retrieving contents:", err)
+			fmt.Println(common.StyleWarn(), "Error retrieving contents from clipboard:", err)
 			return
 		}
-
 		if err := api.API().SetContent(fpAnywherePath, fpSecret, cb); err != nil {
 			fmt.Println(common.StyleWarn(), "Error uploading contents:", err)
 			return
 		}
 
-		fmt.Println(common.StyleInfo(), "Sent ->", common.Color("/"+fpAnywherePath, "A8CC8C"))
+		fmt.Println(common.StyleInfo(), "Sent ->",
+			common.Color(common.PrettyLimit(cb, 32), "66C2CD"), "->",
+			common.Color("/"+fpAnywherePath, "A8CC8C"))
+
 		if len(fpSecret) != 0 {
 			var secret string
 			if fpHideSecret {
@@ -58,7 +53,6 @@ var forcePushCmd = &cobra.Command{
 			}
 			fmt.Println(common.StyleInfo(), "🔐", common.Color(secret, "A8CC8C"))
 		}
-
 		if !fpHideURL {
 			fmt.Println(common.StyleDebug(), "URL:", api.API().UrlGetContents(fpAnywherePath, fpSecret))
 		}
@@ -66,14 +60,5 @@ var forcePushCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(forcePushCmd)
-
-	forcePushCmd.PersistentFlags().StringVarP(&fpAnywherePath, "anywhere", "a", "", "Anywhere Path")
-	forcePushCmd.PersistentFlags().StringVarP(&fpSecret, "secret", "s", "", "Encryption Key")
-
-	forcePushCmd.PersistentFlags().BoolVarP(&fpBase64, "base64", "b", false, "Use Base64")
-	forcePushCmd.PersistentFlags().BoolVarP(&fpHideSecret, "hide-secret", "S", false, "Hide Secret")
-	forcePushCmd.PersistentFlags().BoolVarP(&fpHideURL, "hide-url", "U", false, "Hide URL")
-
-	cobra.CheckErr(cobra.MarkFlagRequired(forcePushCmd.PersistentFlags(), "anywhere"))
+	forceCmd.AddCommand(pushCmd)
 }
