@@ -12,8 +12,8 @@ compile:
 	GOOS=darwin GOARCH=amd64 go build -o ./bin/yaxc-darwin-amd64 ./main.go
 
 	@echo "🪟 Compile for Windows"
-	GOOS=windows GOARCH=amd64 go build -o ./bin/yaxc-windows-amd64 ./main.go
-	GOOS=windows GOARCH=386 go build -o ./bin/yaxc-windows-386 ./main.go
+	GOOS=windows GOARCH=amd64 go build -o ./bin/yaxc-windows-amd64.exe ./main.go
+	GOOS=windows GOARCH=386 go build -o ./bin/yaxc-windows-386.exe ./main.go
 
 	@echo "🐡 Compile for FreeBSD"
 	GOOS=freebsd GOARCH=amd64 go build -o ./bin/yaxc-freebsd-amd64 ./main.go
