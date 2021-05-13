@@ -16,7 +16,7 @@ schemes:
   - "http"
 
 paths:
-  '/anywhere':
+  '/{anywhere}':
     post:
       tags:
         - "{anywhere}"
@@ -26,6 +26,20 @@ paths:
       produces:
         - 'text/plain'
       parameters:
+        - in: "path"
+          name: "anywhere"
+          description: |
+            Path under which the data is to be saved.
+
+            ⚠️ Since the path is **publicly accessible** to **everyone**, either
+
+            * either no sensitive data should be sent to this path
+            * use a long, random path
+            * the data should be encrypted
+            (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
+          required: true
+          type: string
+
         - in: "body"
           name: "contents"
           description: "The content which should be uploaded"
@@ -36,7 +50,12 @@ paths:
 
         - in: "query"
           name: "secret"
-          description: "Encrypts the content with the password (server-side!)"
+          description: |
+            Encrypts the content with the password (server-side!)
+
+            By default, the data is not encrypted.
+            **It is not recommended to encrypt the data on server side. The data should always be encrypted on the client side.**
+            However, if this is not possible, the `secret`-parameter can be used to specify a password with which the data should be encrypted.
           required: false
           type: string
 
@@ -67,9 +86,25 @@ paths:
       produces:
         - 'text/plain'
       parameters:
+        - in: "path"
+          name: "anywhere"
+          description: |
+            Path under which the data is to be saved.
+
+            ⚠️ Since the path is **publicly accessible** to **everyone**, either
+
+            * either no sensitive data should be sent to this path
+            * use a long, random path
+            * the data should be encrypted
+            (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
+          required: true
+          type: string
+
         - in: "query"
           name: "secret"
-          description: "Decrypts the contents with the password (server-side!)"
+          description: |
+            If the data has been encrypted and should be decrypted on the server side (**which is btw. not recommended**),
+            the "password" can be passed via the `secret`-parameter.
           required: false
           type: string
       responses:

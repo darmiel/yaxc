@@ -2,13 +2,11 @@
 Yet Another Cross Clipboard
 > Allan, please add details!
 
+## API
+✨ API Docs moved to: [api.yaxc.d2a.io](https://api.yaxc.d2a.io)
+
 ## Demo
 https://youtu.be/OVpH70byKRQ
-
-```bash
-alias yfll='yaxc force pull -a daniel-temp'
-alias yfsh='yaxc force push -a daniel-temp'
-```
 
 ## CLI
 ### Send Clipboard (one-time)
@@ -149,52 +147,7 @@ $ yaxc serve -b :80
 
 ---
 
-## API
-### Set Data
-Just make a POST request to any path:
-
-**POST** `/hi`
-```
-Hello World!
-```
-
-#### TTL
-By default, the data is kept for 5 minutes. This TTL can be changed via the `ttl`-parameter.
-
-**POST** `/hi?ttl=1m30s`
-```
-Hello World!
-```
-
-#### Encryption
-By default, the data is not encrypted. 
-**It is not recommended to encrypt the data on server side. The data should always be encrypted on the client side.**
-
-However, if this is not possible, the `secret`-parameter can be used to specify a password with which the data should be encrypted.
-
-**POST** `/hi?secret=s3cr3tp455w0rd`
-```
-Hello World!
-```
-**Produces:**
-```
-gwttKS3Q2l0+YR+jQF/02u3fNVmMIcVOTNSGD5vWfrYTtH8adt8r
-```
-
-### Get Data
-**GET** `/hi`
-```
-Hello World!
-```
-
-#### Encryption
-If the data has been encrypted and should be decrypted on the server side (**which is not recommended**), the "password" can be passed via the `secret`-parameter.
-**GET** `/hi`
-```
-gwttKS3Q2l0+YR+jQF/02u3fNVmMIcVOTNSGD5vWfrYTtH8adt8r
-```
-
-**GET** `/hi?secret=s3cr3tp455w0rd`
-```
-Hello World!
+```bash
+alias yfll='yaxc force pull -a anywhere'
+alias yfsh='yaxc force push -a anywhere'
 ```
