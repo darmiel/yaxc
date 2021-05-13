@@ -16,7 +16,7 @@ schemes:
   - "http"
 
 paths:
-  /{anywhere}:
+  '/anywhere':
     post:
       tags:
         - "{anywhere}"
@@ -26,13 +26,25 @@ paths:
       produces:
         - 'text/plain'
       parameters:
-        - in: "secret"
-          name: "Encryption Password"
+        - in: "body"
+          name: "contents"
+          description: "The content which should be uploaded"
+          required: true
+          schema:
+            type: string
+            default: "Hello World!"
+
+        - in: "query"
+          name: "secret"
           description: "Encrypts the content with the password (server-side!)"
           required: false
-        - in: "ttl"
-          name: "TTL"
+          type: string
+
+        - in: "query"
+          name: "ttl"
           description: "Waiting time after which the content is deleted"
+          required: false
+          type: string
       responses:
         "200":
           description: "OK"
@@ -55,10 +67,11 @@ paths:
       produces:
         - 'text/plain'
       parameters:
-        - in: "secret"
-          name: "Encryption Password"
+        - in: "query"
+          name: "secret"
           description: "Decrypts the contents with the password (server-side!)"
           required: false
+          type: string
       responses:
         "200":
           description: "OK"
