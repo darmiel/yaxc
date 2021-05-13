@@ -33,7 +33,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:     "yaxc",
 	Short:   "Yet Another Cross Clipboard",
-	Version: "1.1.0",
+	Version: "1.1.1",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
