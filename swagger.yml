@@ -1,0 +1,68 @@
+swagger: "2.0"
+
+info:
+  description: "YAxC - Yet Another Cross Clipboard"
+  version: "1.1.0"
+  title: "YAxC"
+host: "yaxc.d2a.io"
+basePath: "/"
+
+tags:
+  - name: "{anywhere}"
+    description: "Public Clipboard Name"
+
+schemes:
+  - "https"
+  - "http"
+
+paths:
+  /{anywhere}:
+    post:
+      tags:
+        - "{anywhere}"
+      summary: Post new clipboard data
+      consumes:
+        - 'text/plain'
+      produces:
+        - 'text/plain'
+      parameters:
+        - in: "secret"
+          name: "Encryption Password"
+          description: "Encrypts the content with the password (server-side!)"
+          required: false
+        - in: "ttl"
+          name: "TTL"
+          description: "Waiting time after which the content is deleted"
+      responses:
+        "200":
+          description: "OK"
+        "406":
+          description: "Invalid Path"
+        "413":
+          description: "Body too large"
+        "416":
+          description: "TTL out of range"
+        "422":
+          description: "Invalid TTL. (Examples: 10s, 5m, 1h)"
+        "423":
+          description: "Encryption password was specified, but encryption is not enabled on the server"
+        "500":
+          description: "Intenral server error; e.g. Encryption failed (server-side)"
+    get:
+      tags:
+        - "{anywhere}"
+      summary: Get clipboard data
+      produces:
+        - 'text/plain'
+      parameters:
+        - in: "secret"
+          name: "Encryption Password"
+          description: "Decrypts the contents with the password (server-side!)"
+          required: false
+      responses:
+        "200":
+          description: "OK"
+        "406":
+          description: "Invalid Path"
+        "423":
+          description: "Encryption password was specified, but encryption is not enabled on the server"

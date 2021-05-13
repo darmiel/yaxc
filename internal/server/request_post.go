@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/muesli/termenv"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -31,13 +32,13 @@ func (s *yAxCServer) handlePostAnywhereWithHash(ctx *fiber.Ctx) (err error) {
 func (s *yAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err error) {
 	// validate path
 	if !common.ValidateAnywherePath(path) {
-		return ctx.Status(400).SendString("ERROR: Invalid path")
+		return fiber.NewError(http.StatusNotAcceptable, "invalid anywhere-path")
 	}
 
 	// Read content
 	bytes := ctx.Body()
 	if s.MaxBodyLength > 0 && len(bytes) > s.MaxBodyLength {
-		return s.errBodyLen
+		return fiber.NewError(http.StatusRequestEntityTooLarge, "exceeded max body length")
 	}
 	content := string(bytes)
 
@@ -45,26 +46,26 @@ func (s *yAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err
 	ttl := s.DefaultTTL
 	if q := ctx.Query("ttl"); q != "" {
 		if ttl, err = time.ParseDuration(q); err != nil {
-			return
+			return fiber.NewError(http.StatusUnprocessableEntity, "invalid ttl. (examples: 10s, 5m, 1h)")
 		}
 	}
 
 	// Encryption
 	if q := ctx.Query("secret"); q != "" {
 		if !s.EnableEncryption {
-			return errEncryptionNotEnabled
+			return fiber.NewError(http.StatusLocked, "encryption is currently not enabled on this server")
 		}
 		// fail on error
 		encrypt, err := common.Encrypt(content, q)
 		if err != nil {
-			return err
+			return fiber.NewError(http.StatusInternalServerError, "error encrypting content: "+err.Error())
 		}
 		content = string(encrypt)
 	}
 
 	// Check if ttl is valid
 	if (s.MinTTL != 0 && s.MinTTL > ttl) || (s.MaxTTL != 0 && s.MaxTTL < ttl) {
-		return ctx.Status(400).SendString("ERROR: TTL out of range")
+		return fiber.NewError(http.StatusRequestedRangeNotSatisfiable, "ttl out of range")
 	}
 
 	// generate hash

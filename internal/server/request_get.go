@@ -5,6 +5,7 @@ import (
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
 	"github.com/muesli/termenv"
+	"net/http"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 
 	// validate path
 	if !common.ValidateAnywherePath(path) {
-		return ctx.Status(400).SendString("ERROR: Invalid path")
+		return fiber.NewError(http.StatusNotAcceptable, "invalid anywhere-path")
 	}
 
 	var res string
@@ -24,7 +25,7 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 	// Encryption
 	if q := ctx.Query("secret"); q != "" {
 		if !s.EnableEncryption {
-			return errEncryptionNotEnabled
+			return fiber.NewError(http.StatusLocked, "encryption is currently not enabled on this server")
 		}
 		// do not fail on error
 		if encrypt, err := common.Decrypt(res, q); err == nil {

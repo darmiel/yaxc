@@ -45,15 +45,13 @@ type YAxCConfig struct {
 
 type yAxCServer struct {
 	*YAxCConfig
-	App        *fiber.App
-	Backend    Backend
-	errBodyLen error
+	App     *fiber.App
+	Backend Backend
 }
 
 func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
 	s = &yAxCServer{
 		YAxCConfig: cfg,
-		errBodyLen: errors.New("exceeded max body length"),
 	}
 
 	// backend
