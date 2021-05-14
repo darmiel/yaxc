@@ -8,18 +8,22 @@ host: "yaxc.d2a.io"
 basePath: "/"
 
 tags:
-  - name: "{anywhere}"
+  - name: "anywhere"
     description: "Public Clipboard Name"
-
+  - name: "hash"
+    description: "Hash"
 schemes:
   - "https"
   - "http"
 
 paths:
+  #
+  # POST /{anywhere}
+  #
   '/{anywhere}':
     post:
       tags:
-        - "{anywhere}"
+        - "anywhere"
       summary: Post new clipboard data
       consumes:
         - 'text/plain'
@@ -31,11 +35,11 @@ paths:
           description: |
             Path under which the data is to be saved.
 
-            ⚠️ Since the path is **publicly accessible** to **everyone**, either
+            ⚠️ Since the path is **publicly accessible** to **everyone**
 
-            * either no sensitive data should be sent to this path
+            * no sensitive data should be sent to this path
             * use a long, random path
-            * the data should be encrypted
+            * encrypt the data
             (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
           required: true
           type: string
@@ -79,9 +83,13 @@ paths:
           description: "Encryption password was specified, but encryption is not enabled on the server"
         "500":
           description: "Intenral server error; e.g. Encryption failed (server-side)"
+
+    #
+    # GET /{anywhere}
+    #
     get:
       tags:
-        - "{anywhere}"
+        - "anywhere"
       summary: Get clipboard data
       produces:
         - 'text/plain'
@@ -91,11 +99,11 @@ paths:
           description: |
             Path under which the data is to be saved.
 
-            ⚠️ Since the path is **publicly accessible** to **everyone**, either
+            ⚠️ Since the path is **publicly accessible** to **everyone**
 
-            * either no sensitive data should be sent to this path
+            * no sensitive data should be sent to this path
             * use a long, random path
-            * the data should be encrypted
+            * encrypt the data
             (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
           required: true
           type: string
@@ -110,7 +118,113 @@ paths:
       responses:
         "200":
           description: "OK"
+        "404":
+          description: "Data not found"
         "406":
           description: "Invalid Path"
         "423":
           description: "Encryption password was specified, but encryption is not enabled on the server"
+
+
+  #
+  # POST /{anywhere}/{hash}
+  #
+  '/{anywhere}/{hash}':
+    post:
+      tags:
+        - "hash"
+      summary: "Post new clipboard data with custom hash"
+      consumes:
+        - 'text/plain'
+      produces:
+        - 'text/plain'
+      parameters:
+        - in: "path"
+          name: "anywhere"
+          description: |
+            Path under which the data is to be saved.
+
+            ⚠️ Since the path is **publicly accessible** to **everyone**
+
+            * no sensitive data should be sent to this path
+            * use a long, random path
+            * encrypt the data
+            (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
+          required: true
+          type: string
+
+        - in: "path"
+          name: "hash"
+          description: "Custom hash for data (must be in **hex**)"
+          required: true
+          type: string
+
+        - in: "body"
+          name: "contents"
+          description: "The content which should be uploaded"
+          required: true
+          schema:
+            type: string
+            default: "Hello World!"
+
+        - in: "query"
+          name: "secret"
+          description: |
+            Encrypts the content with the password (server-side!)
+
+            By default, the data is not encrypted.
+            **It is not recommended to encrypt the data on server side. The data should always be encrypted on the client side.**
+            However, if this is not possible, the `secret`-parameter can be used to specify a password with which the data should be encrypted.
+          required: false
+          type: string
+
+        - in: "query"
+          name: "ttl"
+          description: "Waiting time after which the content is deleted"
+          required: false
+          type: string
+      responses:
+        "200":
+          description: "OK"
+        "406":
+          description: "Invalid Path"
+        "413":
+          description: "Body too large"
+        "416":
+          description: "TTL out of range"
+        "422":
+          description: "Invalid TTL. (Examples: 10s, 5m, 1h)"
+        "423":
+          description: "Encryption password was specified, but encryption is not enabled on the server"
+        "500":
+          description: "Intenral server error; e.g. Encryption failed (server-side)"
+
+  #
+  # GET /hash/{anywhere}
+  #
+  '/hash/{anywhere}':
+    get:
+      tags:
+        - "hash"
+      summary: Get hash of clipboard data
+      produces:
+        - 'text/plain'
+      parameters:
+        - in: "path"
+          name: "anywhere"
+          description: |
+            Path under which the data is to be saved.
+
+            ⚠️ Since the path is **publicly accessible** to **everyone**
+
+            * no sensitive data should be sent to this path
+            * use a long, random path
+            * encrypt the data
+            (best on client-side, but it is possible on server-side by using the `secret` parameter, **which is not recommended!**)
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "OK"
+        "404":
+          description: "Hash not found"
