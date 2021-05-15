@@ -12,6 +12,7 @@ services:
     depends_on:
       - redis
     restart: on-failure
+    tty: true
     labels:
       - "com.centurylinklabs.watchtower.scope=yaxcscope"
 
