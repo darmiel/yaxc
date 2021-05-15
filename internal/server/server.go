@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"strings"
 	"time"
@@ -10,7 +11,7 @@ import (
 func (s *yAxCServer) Start() {
 	log.Info("Starting YAxC server on", s.BindAddress)
 
-	cfg := &fiber.Config{Immutable: true}
+	cfg := fiber.Config{}
 
 	if s.ProxyHeader != "" {
 		if s.ProxyHeader == "$proxy" {
@@ -18,7 +19,12 @@ func (s *yAxCServer) Start() {
 		}
 		cfg.ProxyHeader = s.ProxyHeader
 	}
-	s.App = fiber.New(*cfg)
+
+	s.App = fiber.New(cfg)
+
+	s.App.Use(favicon.New(favicon.Config{
+		File: "./assets/favicon.ico",
+	}))
 
 	// limiter middleware
 	s.App.Use(limiter.New(limiter.Config{
