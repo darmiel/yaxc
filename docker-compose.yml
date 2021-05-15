@@ -3,6 +3,7 @@ version: "3"
 services:
   redis:
     image: redis:latest
+
   yaxc:
     image: darmiel/yaxc:latest
     command: serve --enable-encryption -x 86400 -l 5s -s 1h -r redis:6379 --proxy-header X-Forwarded-For
@@ -13,6 +14,7 @@ services:
     restart: on-failure
     labels:
       - "com.centurylinklabs.watchtower.scope=yaxcscope"
+
   watchtower:
     image: containrrr/watchtower
     volumes:
@@ -20,4 +22,13 @@ services:
     command: --interval 30 --scope yaxcscope
     labels:
       - "com.centurylinklabs.watchtower.scope=yaxcscope"
+    restart: on-failure
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - 127.0.0.1:10002:8080
+    environment:
+      SWAGGER_JSON: "/swagger.yml"
+    command: "sh -c 'curl https://raw.githubusercontent.com/darmiel/yaxc/main/swagger.yml -o /swagger.yml && ls -la / && sh /usr/share/nginx/run.sh'"
     restart: on-failure
