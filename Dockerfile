@@ -20,5 +20,10 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o yaxc .
 # Output Image
 FROM alpine
 COPY --from=builder /usr/src/app/yaxc .
-RUN ls -larth /
+
+# Copy assets
+RUN mkdir /assets
+COPY --from=builder /usr/src/app/assets/ /assets
+RUN ls -larth /assets
+
 ENTRYPOINT ["/yaxc"]
