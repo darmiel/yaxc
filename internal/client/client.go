@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/darmiel/yaxc/internal/api"
 	"sync"
-	"time"
 )
 
 var (
@@ -21,7 +20,6 @@ type Check struct {
 	useBase64 bool
 	//
 	previousClipboard string
-	lastUpdate        time.Time
 }
 
 func NewCheck(path, pass string, b64 bool) *Check {

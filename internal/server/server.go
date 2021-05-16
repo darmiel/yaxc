@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (s *yAxCServer) Start() {
+func (s *YAxCServer) Start() {
 	log.Info("Starting YAxC server on", s.BindAddress)
 
 	cfg := fiber.Config{}

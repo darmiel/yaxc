@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
@@ -12,14 +11,12 @@ import (
 	"time"
 )
 
-var errEncryptionNotEnabled = errors.New("encryption not enabled")
-
-func (s *yAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
+func (s *YAxCServer) handlePostAnywhere(ctx *fiber.Ctx) (err error) {
 	path := utils.CopyString(strings.TrimSpace(ctx.Params("anywhere")))
 	return s.setAnywhereWithHash(ctx, path, "")
 }
 
-func (s *yAxCServer) handlePostAnywhereWithHash(ctx *fiber.Ctx) (err error) {
+func (s *YAxCServer) handlePostAnywhereWithHash(ctx *fiber.Ctx) (err error) {
 	path := utils.CopyString(strings.TrimSpace(ctx.Params("anywhere")))
 	hash := utils.CopyString(strings.TrimSpace(ctx.Params("hash")))
 	// validate hash
@@ -29,7 +26,7 @@ func (s *yAxCServer) handlePostAnywhereWithHash(ctx *fiber.Ctx) (err error) {
 	return s.setAnywhereWithHash(ctx, path, hash)
 }
 
-func (s *yAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err error) {
+func (s *YAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err error) {
 	// validate path
 	if !common.ValidateAnywherePath(path) {
 		return fiber.NewError(http.StatusNotAcceptable, "invalid anywhere-path")

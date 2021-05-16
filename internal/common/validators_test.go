@@ -73,7 +73,7 @@ func TestContainsOtherThan(t *testing.T) {
 }
 
 // AssertEqual checks if values are equal
-func AssertEqual(t *testing.T, a interface{}, b interface{}) {
+func AssertEqual(t *testing.T, a, b interface{}) {
 	if a == b {
 		return
 	}

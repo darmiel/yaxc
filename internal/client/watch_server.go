@@ -20,7 +20,6 @@ func WatchServer(c *Check, d time.Duration, done chan bool) {
 			if err := c.CheckServer(); err != nil {
 				fmt.Println(common.StyleWarn(), err)
 			}
-			break
 		}
 	}
 }

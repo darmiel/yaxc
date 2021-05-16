@@ -43,14 +43,14 @@ type YAxCConfig struct {
 	ProxyHeader      string
 }
 
-type yAxCServer struct {
+type YAxCServer struct {
 	*YAxCConfig
 	App     *fiber.App
 	Backend Backend
 }
 
-func NewServer(cfg *YAxCConfig) (s *yAxCServer) {
-	s = &yAxCServer{
+func NewServer(cfg *YAxCConfig) (s *YAxCServer) {
+	s = &YAxCServer{
 		YAxCConfig: cfg,
 	}
 

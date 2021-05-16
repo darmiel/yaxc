@@ -44,7 +44,7 @@ var pushCmd = &cobra.Command{
 			common.Color(common.PrettyLimit(cb, 32), "66C2CD"), "->",
 			common.Color("/"+fpAnywherePath, "A8CC8C"))
 
-		if len(fpSecret) != 0 {
+		if fpSecret != "" {
 			var secret string
 			if fpHideSecret {
 				secret = strings.Repeat("*", len(fpSecret)) + " (hidden)"

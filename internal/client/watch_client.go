@@ -18,7 +18,6 @@ func WatchClient(c *Check, d time.Duration, done chan bool) {
 			if err := c.CheckClient(); err != nil {
 				fmt.Println(common.StyleWarn(), err)
 			}
-			break
 		}
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
+func (s *YAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 	path := strings.TrimSpace(ctx.Params("anywhere"))
 
 	// validate path
@@ -47,7 +47,7 @@ func (s *yAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 	return ctx.SendString(res)
 }
 
-func (s *yAxCServer) handleGetHashAnywhere(ctx *fiber.Ctx) (err error) {
+func (s *YAxCServer) handleGetHashAnywhere(ctx *fiber.Ctx) (err error) {
 	path := strings.TrimSpace(ctx.Params("anywhere"))
 	var res string
 	if res, err = s.Backend.GetHash(path); err != nil {
