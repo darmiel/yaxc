@@ -1,3 +1,5 @@
+// +build client
+
 /*
 Copyright © 2021 darmiel <hi@d2a.io>
 
