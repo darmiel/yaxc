@@ -1,3 +1,7 @@
+[![Deploy to docker hub (v-tag)](https://github.com/darmiel/yaxc/actions/workflows/deploy_hub.yml/badge.svg)](https://github.com/darmiel/yaxc/actions/workflows/deploy_hub.yml) |
+[![.github/workflows/test.yml](https://github.com/darmiel/yaxc/actions/workflows/test.yml/badge.svg)](https://github.com/darmiel/yaxc/actions/workflows/test.yml) | 
+[![DeepSource](https://deepsource.io/gh/darmiel/yaxc.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/darmiel/yaxc/?ref=repository-badge)
+
 <!-- Logo -->
 <p align="center">
   <img src="./assets/YAxC-Filled@128px.png" alt="yaxc">

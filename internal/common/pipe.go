@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var NotPiped = errors.New("not piped")
+var ErrNotPiped = errors.New("not piped")
 
 func ReadPipe() (res string, err error) {
 	var info os.FileInfo
@@ -16,7 +16,7 @@ func ReadPipe() (res string, err error) {
 		return
 	}
 	if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
-		err = NotPiped
+		err = ErrNotPiped
 		return
 	}
 	reader := bufio.NewReader(os.Stdin)

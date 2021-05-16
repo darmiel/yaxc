@@ -36,7 +36,7 @@ var pasteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Read pipe
 		pipe, err := common.ReadPipe()
-		if err == common.NotPiped {
+		if err == common.ErrNotPiped {
 			log.Fatalln("The command is intended to work with pipes.")
 			return
 		}
