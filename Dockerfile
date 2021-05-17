@@ -15,7 +15,7 @@ RUN go mod graph | awk '{if ($1 !~ "@") print $2}' | xargs go get
 COPY . .
 
 # Build from sources
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -flags client,server -o yaxc .
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -tags client,server -o yaxc .
 
 # Output Image
 FROM alpine
