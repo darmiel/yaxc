@@ -18,9 +18,11 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/api"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -28,6 +30,7 @@ import (
 var (
 	getAnywherePath string
 	getPassphrase   string
+	getFile         string
 )
 
 // getCmd represents the get command
@@ -42,8 +45,27 @@ var getCmd = &cobra.Command{
 			return
 		}
 
-		log.Println("Received contents (", len(content), "bytes ):")
-		fmt.Println(content)
+		// write to file?
+		if getFile == "" {
+			log.Println("Received contents (", len(content), "bytes ):")
+			fmt.Println(content)
+			return
+		}
+
+		// write to file!
+		var data []byte
+		data, err = base64.StdEncoding.DecodeString(content)
+		if err != nil {
+			fmt.Println("-- WARN: Could not decode from base64! --")
+			data = []byte(content)
+		}
+
+		if err := os.WriteFile(getFile, data, 0666); err != nil {
+			log.Fatalln("Error writing file contents:", err)
+			return
+		}
+
+		log.Println("Saved to", getFile)
 	},
 }
 
@@ -52,4 +74,5 @@ func init() {
 
 	getCmd.Flags().StringVarP(&getAnywherePath, "anywhere", "a", "", "Path (Anywhere)")
 	getCmd.Flags().StringVarP(&getPassphrase, "passphrase", "s", "", "Encryption Key")
+	getCmd.Flags().StringVarP(&getFile, "out-file", "o", "", "Download contents to file")
 }
