@@ -3,6 +3,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
@@ -60,6 +61,21 @@ func (s *YAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err
 			return fiber.NewError(http.StatusInternalServerError, "error encrypting content: "+err.Error())
 		}
 		content = string(encrypt)
+	}
+
+	// Base64
+	if q := ctx.Query("b64"); q != "" {
+		if strings.EqualFold(q, "encode") {
+			content = base64.StdEncoding.EncodeToString([]byte(content))
+		} else if strings.EqualFold(q, "decode") {
+			b, err := base64.StdEncoding.DecodeString(content)
+			if err != nil {
+				return fiber.NewError(504, "base64 encryption broke: "+err.Error())
+			}
+			content = string(b)
+		} else {
+			return fiber.NewError(506, "invalid base64 mode. available: encode, decode")
+		}
 	}
 
 	// Check if ttl is valid

@@ -3,6 +3,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
 	"github.com/gofiber/fiber/v2"
@@ -32,6 +33,21 @@ func (s *YAxCServer) handleGetAnywhere(ctx *fiber.Ctx) (err error) {
 		// do not fail on error
 		if encrypt, err := common.Decrypt(res, q); err == nil {
 			res = string(encrypt)
+		}
+	}
+
+	// Base64
+	if q := ctx.Query("b64"); q != "" {
+		if strings.EqualFold(q, "encode") {
+			res = base64.StdEncoding.EncodeToString([]byte(res))
+		} else if strings.EqualFold(q, "decode") {
+			b, err := base64.StdEncoding.DecodeString(res)
+			if err != nil {
+				return fiber.NewError(504, "base64 encryption broke: "+err.Error())
+			}
+			res = string(b)
+		} else {
+			return fiber.NewError(506, "invalid base64 mode. available: encode, decode")
 		}
 	}
 

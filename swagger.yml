@@ -67,7 +67,13 @@ paths:
           name: "ttl"
           description: "Waiting time after which the content is deleted"
           required: false
-          type: string
+          type: strin
+
+        - in: "query"
+        name: "b64"
+        description: "`encode` or `decode` response to/from Base64"
+        required: false
+        type: stringg
       responses:
         "200":
           description: "OK"
@@ -82,7 +88,11 @@ paths:
         "423":
           description: "Encryption password was specified, but encryption is not enabled on the server"
         "500":
-          description: "Intenral server error; e.g. Encryption failed (server-side)"
+          description: "Internal server error; e.g. Encryption failed (server-side)"
+        "504":
+          description: "Error decoding Base64"
+        "506":
+          description: "Invalid Base64-Mode. Available: encode, decode"
 
     #
     # GET /{anywhere}
@@ -115,6 +125,12 @@ paths:
             the "password" can be passed via the `secret`-parameter.
           required: false
           type: string
+
+        - in: "query"
+          name: "b64"
+          description: "`encode` or `decode` response to/from Base64"
+          required: false
+          type: string
       responses:
         "200":
           description: "OK"
@@ -124,6 +140,10 @@ paths:
           description: "Invalid Path"
         "423":
           description: "Encryption password was specified, but encryption is not enabled on the server"
+        "504":
+          description: "Error decoding Base64"
+        "506":
+          description: "Invalid Base64-Mode. Available: encode, decode"
 
 
   #
@@ -197,7 +217,7 @@ paths:
         "423":
           description: "Encryption password was specified, but encryption is not enabled on the server"
         "500":
-          description: "Intenral server error; e.g. Encryption failed (server-side)"
+          description: "Internal server error; e.g. Encryption failed (server-side)"
 
   #
   # GET /hash/{anywhere}
