@@ -89,6 +89,10 @@ func regIntP(cmd *cobra.Command, name, shorthand string, def int, usage string) 
 	cmd.PersistentFlags().IntP(name, shorthand, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
 }
+func regInt64P(cmd *cobra.Command, name, shorthand string, def int64, usage string) {
+	cmd.PersistentFlags().Int64P(name, shorthand, def, usage)
+	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
+}
 func regInt(cmd *cobra.Command, name string, def int, usage string) {
 	cmd.PersistentFlags().Int(name, def, usage)
 	cobra.CheckErr(viper.BindPFlag(name, cmd.PersistentFlags().Lookup(name)))
