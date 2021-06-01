@@ -1,3 +1,5 @@
+// +build dev
+
 /*
 Copyright © 2021 darmiel <hi@d2a.io>
 
@@ -17,45 +19,29 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/darmiel/yaxc/internal/whitelist"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
-	"time"
 )
-
-type Claim struct {
-	MaxBody  int64 `json:"max_body"`
-	CountNum int   `json:"count_num_id"`
-	jwt.StandardClaims
-}
 
 // jwtgenCmd represents the jwtgen command
 var jwtgenCmd = &cobra.Command{
 	Use:   "jwtgen",
 	Short: "Generate JWT Token",
 	Run: func(cmd *cobra.Command, args []string) {
-		secret := viper.GetString("jwt")
+		secret := viper.GetString("secret")
 		maxBody := viper.GetInt64("max-body")
 		audience := viper.GetString("audience")
 		issuer := viper.GetString("issuer")
 		count := viper.GetInt("count")
 
-		claims := &Claim{
-			MaxBody: maxBody,
-			StandardClaims: jwt.StandardClaims{
-				Audience: audience,
-				IssuedAt: time.Now().Unix(),
-				Issuer:   issuer,
-			},
-		}
-
 		fmt.Println("🔨 Generating", count, "JWT-Tokens ...")
 		for i := 0; i < count; i++ {
-			claims.CountNum = i
-
-			token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-			signed, err := token.SignedString([]byte(secret))
+			signed, err := whitelist.GenerateToken(secret,
+				audience,
+				issuer,
+				maxBody)
 			if err != nil {
 				log.Fatalln("Error signing:", err)
 				return

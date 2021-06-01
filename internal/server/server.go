@@ -13,7 +13,7 @@ import (
 func (s *YAxCServer) Start() {
 	log.Info("Starting YAxC server on", s.BindAddress)
 
-	cfg := fiber.Config{}
+	cfg := fiber.Config{ReadTimeout: 10 * time.Second}
 
 	if s.ProxyHeader != "" {
 		if s.ProxyHeader == "$proxy" {

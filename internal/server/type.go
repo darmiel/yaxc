@@ -40,9 +40,10 @@ type YAxCConfig struct {
 	MinTTL     time.Duration // == MaxTTL -> cannot specify TTL
 	MaxTTL     time.Duration // == MinTTL -> cannot specify TTL
 	// Other
-	MaxBodyLength    int
+	MaxBodyLength    int64
 	EnableEncryption bool
 	ProxyHeader      string
+	JWTSign          []byte
 }
 
 type YAxCServer struct {
@@ -91,6 +92,5 @@ func NewServer(cfg *YAxCConfig) (s *YAxCServer) {
 	}
 
 	log.Info("Encryption:", s.EnableEncryption)
-
 	return
 }

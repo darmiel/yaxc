@@ -40,7 +40,7 @@ var serveCmd = &cobra.Command{
 		defTTL := viper.GetDuration("default-ttl")
 		minTTL := viper.GetDuration("min-ttl")
 		maxTTL := viper.GetDuration("max-ttl")
-		maxBodyLen := viper.GetInt("max-body-length")
+		maxBodyLen := viper.GetInt64("max-body-length")
 
 		// validate values
 		if bind == "" {
@@ -74,6 +74,7 @@ var serveCmd = &cobra.Command{
 		// other
 		enableEnc := viper.GetBool("enable-encryption")
 		proxyHeader := viper.GetString("proxy-header")
+		jwt := viper.GetString("jwt")
 
 		// create server & start
 		s := server.NewServer(&server.YAxCConfig{
@@ -92,6 +93,7 @@ var serveCmd = &cobra.Command{
 			// Other
 			EnableEncryption: enableEnc,
 			ProxyHeader:      proxyHeader,
+			JWTSign:          []byte(jwt),
 		})
 		go s.Start()
 
@@ -130,7 +132,8 @@ func init() {
 	regDurP(serveCmd, "max-ttl", "s", 60*time.Minute, "Max TTL")
 
 	// other
-	regIntP(serveCmd, "max-body-length", "x", 8192, "Max Body Length")
+	regInt64P(serveCmd, "max-body-length", "x", 8192, "Max Body Length")
 	regBoolP(serveCmd, "enable-encryption", "e", true, "Enable Encryption")
 	regStr(serveCmd, "proxy-header", "", "Proxy Header")
+	regStr(serveCmd, "jwt", "", "JWT-Token")
 }

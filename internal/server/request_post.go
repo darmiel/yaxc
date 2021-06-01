@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
+	"github.com/darmiel/yaxc/internal/whitelist"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/muesli/termenv"
@@ -35,9 +36,31 @@ func (s *YAxCServer) setAnywhereWithHash(ctx *fiber.Ctx, path, hash string) (err
 		return fiber.NewError(http.StatusNotAcceptable, "invalid anywhere-path")
 	}
 
+	var maxBodyLength = s.MaxBodyLength
+
+	// check authorization
+	if auth := ctx.Get("Authorization"); auth != "" {
+		if len(s.JWTSign) == 0 {
+			return fiber.NewError(509, "whitelist not available")
+		}
+		spl := strings.Split(auth, " ")
+		if spl[0] != "JWT" {
+			return fiber.NewError(http.StatusUnauthorized, "invalid auth type - JWT required")
+		}
+		claims, err := whitelist.ValidateToken(s.JWTSign, spl[1])
+		if err != nil {
+			return fiber.NewError(510, "error validating token: "+err.Error())
+		}
+		if claims.MaxBody != 0 {
+			maxBodyLength = claims.MaxBody
+		}
+		fmt.Println(common.StyleInfo(),
+			claims.Issuer, "used whitelist key with claim: mb:", claims.MaxBody, ", ia:", claims.IssuedAt)
+	}
+
 	// Read content
 	bytes := ctx.Body()
-	if s.MaxBodyLength > 0 && len(bytes) > s.MaxBodyLength {
+	if s.MaxBodyLength > 0 && int64(len(bytes)) > maxBodyLength {
 		return fiber.NewError(http.StatusRequestEntityTooLarge, "exceeded max body length")
 	}
 	content := string(bytes)

@@ -77,6 +77,8 @@ paths:
       responses:
         "200":
           description: "OK"
+        "401":
+          description: "Invalid Auth-Type in Authorization-Header. Only accepts JWT"
         "406":
           description: "Invalid Path"
         "413":
@@ -93,6 +95,10 @@ paths:
           description: "Error decoding Base64"
         "506":
           description: "Invalid Base64-Mode. Available: encode, decode"
+        "509":
+          description: "The whitelist is currently not enabled on the server"
+        "510":
+          description: "Error validating token"
 
     #
     # GET /{anywhere}
