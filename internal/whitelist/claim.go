@@ -1,6 +1,6 @@
 package whitelist
 
-import "github.com/dgrijalva/jwt-go"
+import "github.com/golang-jwt/jwt"
 
 type Claim struct {
 	MaxBody  int64 `json:"max_body"`

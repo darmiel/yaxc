@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/darmiel/yaxc/internal/common"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"math/rand"
 	"time"
 )
