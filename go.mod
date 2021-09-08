@@ -4,9 +4,9 @@ go 1.16
 
 require (
 	github.com/atotto/clipboard v0.1.4
-	github.com/go-redis/redis/v8 v8.11.0
-	github.com/gofiber/fiber/v2 v2.15.0
-	github.com/golang-jwt/jwt v3.2.1+incompatible
+	github.com/go-redis/redis/v8 v8.11.3
+	github.com/gofiber/fiber/v2 v2.18.0
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/imroc/req v0.3.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
